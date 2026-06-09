@@ -1,0 +1,7 @@
+import {
+  "wangyichao/moonmarkdown" @moonmarkdown,
+}
+
+options(
+  "is-main": true,
+)
