@@ -7,7 +7,7 @@
 | **项目名称** | MoonMarkdown：CommonMark 规范 Markdown 解析器 |
 | **参赛者** | wangyichao |
 | **GitHub 仓库** | https://github.com/wangyichao/moonmarkdown |
-| **GitLink 仓库** | https://gitlink.org.cn/wangyichao/moonmarkdown |
+| **GitLink 仓库** | https://gitlink.org.cn/oillee/moonmarkdown |
 | **项目方向** | MoonBit 基础库 / 文档解析基础设施 |
 | **是否为移植项目** | 否（原创实现，参考 CommonMark 规范 0.31.2） |
 | **许可证** | MIT |
