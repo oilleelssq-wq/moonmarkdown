@@ -1,13 +1,22 @@
-// Split source text into lines, handling \r\n, \r, \n endings.
+/// Line scanner: splits source text into an array of Line structures.
+///
+/// Handles `\r\n`, `\r`, and `\n` line endings (all normalized to `\n`
+/// in the output). Trailing spaces are stripped per CommonMark spec.
 
-// A line in the source document.
+/// A line in the source document with position metadata.
 pub(all) struct Line {
+  /// Line content with trailing whitespace stripped.
   pub content : String
+  /// Byte offset from start of source text (0-based).
   pub offset : Int
+  /// Whether the line is empty or whitespace-only.
   pub is_blank : Bool
+  /// Line ending length: 0=EOF, 1=`\n` or `\r`, 2=`\r\n`
   pub ending : Int
 }
 
+/// Split source text into lines.
+/// Each line has trailing spaces stripped and `\r\n` normalized to `\n`.
 pub fn scan_lines(src : String) -> Array[Line] {
   let lines = Array::new(capacity=(src.length() / 40 + 10))
   let len = src.length()
@@ -42,6 +51,7 @@ pub fn scan_lines(src : String) -> Array[Line] {
   lines
 }
 
+/// Strip trailing spaces and tabs from a line.
 fn strip_trailing_spaces(s : String) -> String {
   let end = s.length()
   let mut i = end
@@ -59,6 +69,7 @@ fn strip_trailing_spaces(s : String) -> String {
   }
 }
 
+/// Get the raw content of a line from the original source.
 pub fn raw_line_content(src : String, line : Line) -> String {
   let end = line.offset + line.content.length()
   if line.ending == 2 {

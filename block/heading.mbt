@@ -2,7 +2,14 @@
 
 fn is_atx_heading(line : String) -> Bool {
   let len = line.length()
-  len > 0 && line[0] == '#' && len <= 7
+  if len == 0 || line[0] != '#' {
+    return false
+  }
+  let mut i = 0
+  while i < len && i <= 6 && line[i] == '#' {
+    i = i + 1
+  }
+  i > 0 && i <= 6 && i < len && (line[i] == ' ' || line[i] == '\t')
 }
 
 // Parse an ATX heading: 1-6 # characters followed by space and content.

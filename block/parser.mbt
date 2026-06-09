@@ -148,8 +148,11 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
 }
 
 fn check_four_spaces(s : String) -> Bool {
+  if s.length() < 4 {
+    return false
+  }
   let mut i = 0
-  while i < 4 && i < s.length() {
+  while i < 4 {
     if s[i] != ' ' {
       return false
     }
