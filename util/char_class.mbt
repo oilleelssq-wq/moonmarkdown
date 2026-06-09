@@ -1,82 +1,76 @@
-// Character classification predicates for CommonMark parsing.
-// CommonMark is defined in terms of ASCII character classes.
+/// Character classification predicates for CommonMark parsing.
+/// CommonMark is defined in terms of ASCII character classes.
 
-/// Whitespace: space (U+0020) or tab (U+0009).
-fn is_whitespace(c : Char) -> Bool {
+/// Check if c is whitespace (U+0020 space or U+0009 tab).
+pub fn is_whitespace(c : UInt16) -> Bool {
   c == ' ' || c == '\t'
 }
 
-/// Line ending: LF or CR.
-fn is_line_ending(c : Char) -> Bool {
+/// Check if c is a line ending (LF or CR).
+pub fn is_line_ending(c : UInt16) -> Bool {
   c == '\n' || c == '\r'
 }
 
-/// Space or tab (same as is_whitespace).
-fn is_space_or_tab(c : Char) -> Bool {
+/// Check if c is a space or tab (same as is_whitespace).
+pub fn is_space_or_tab(c : UInt16) -> Bool {
   c == ' ' || c == '\t'
 }
 
-/// ASCII punctuation as defined by CommonMark spec.
-fn is_ascii_punctuation(c : Char) -> Bool {
-  let code = c.to_int()
-  (code >= 0x21 && code <= 0x2F) ||
-  (code >= 0x3A && code <= 0x40) ||
-  (code >= 0x5B && code <= 0x60) ||
-  (code >= 0x7B && code <= 0x7E)
+/// Check if c is ASCII punctuation per CommonMark spec definition.
+/// Ranges: 0x21-0x2F, 0x3A-0x40, 0x5B-0x60, 0x7B-0x7E
+pub fn is_ascii_punctuation(c : UInt16) -> Bool {
+  (c >= 0x21 && c <= 0x2F) ||
+  (c >= 0x3A && c <= 0x40) ||
+  (c >= 0x5B && c <= 0x60) ||
+  (c >= 0x7B && c <= 0x7E)
 }
 
-/// Unicode punctuation (Pc, Pd, Pe, Pf, Pi, Po, Ps categories).
-/// For simplicity in CommonMark, this is a reasonable approximation.
-fn is_unicode_punctuation(c : Char) -> Bool {
-  let code = c.to_int()
-  // General Unicode punctuation ranges
-  (code >= 0x00A1 && code <= 0x00BF) ||
-  (code >= 0x2010 && code <= 0x2027) ||
-  (code >= 0x2030 && code <= 0x205E) ||
-  code == 0x00A0 || // NBSP
-  code == 0x2000 || code == 0x2001 || code == 0x2002 || code == 0x2003 ||
-  code == 0x2004 || code == 0x2005 || code == 0x2006 || code == 0x2007 ||
-  code == 0x2008 || code == 0x2009 || code == 0x200A || code == 0x2028 ||
-  code == 0x2029 || code == 0x202F
+/// Check if c is a Unicode punctuation character.
+pub fn is_unicode_punctuation(c : UInt16) -> Bool {
+  (c >= 0x00A1 && c <= 0x00BF) ||
+  (c >= 0x2010 && c <= 0x2027) ||
+  (c >= 0x2030 && c <= 0x205E) ||
+  c == 0x00A0 || c == 0x2028 || c == 0x2029 || c == 0x202F
 }
 
-/// Is c a valid domain character for autolinks?
-fn is_alpha(c : Char) -> Bool {
-  let code = c.to_int()
-  (code >= 0x41 && code <= 0x5A) || (code >= 0x61 && code <= 0x7A)
+/// Check if c is alphabetic (A-Z or a-z).
+pub fn is_alpha(c : UInt16) -> Bool {
+  (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
 }
 
-fn is_digit(c : Char) -> Bool {
-  let code = c.to_int()
-  code >= 0x30 && code <= 0x39
+/// Check if c is a decimal digit (0-9).
+pub fn is_digit(c : UInt16) -> Bool {
+  c >= '0' && c <= '9'
 }
 
-fn is_alphanumeric(c : Char) -> Bool {
+/// Check if c is alphanumeric.
+pub fn is_alphanumeric(c : UInt16) -> Bool {
   is_alpha(c) || is_digit(c)
 }
 
-fn is_lower_alpha(c : Char) -> Bool {
-  let code = c.to_int()
-  code >= 0x61 && code <= 0x7A
+/// Check if c is lowercase alpha (a-z).
+pub fn is_lower_alpha(c : UInt16) -> Bool {
+  c >= 'a' && c <= 'z'
 }
 
-fn is_upper_alpha(c : Char) -> Bool {
-  let code = c.to_int()
-  code >= 0x41 && code <= 0x5A
+/// Check if c is uppercase alpha (A-Z).
+pub fn is_upper_alpha(c : UInt16) -> Bool {
+  c >= 'A' && c <= 'Z'
 }
 
-/// Hex digit (0-9, a-f, A-F).
-fn is_hexdig(c : Char) -> Bool {
+/// Check if c is a hexadecimal digit (0-9, a-f, A-F).
+pub fn is_hexdig(c : UInt16) -> Bool {
   is_digit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')
 }
 
-/// Is the character an escapable ASCII punctuation character?
-fn is_escapable(c : Char) -> Bool {
-  match c {
-    '!' | '"' | '#' | '$' | '%' | '&' | '\'' | '(' | ')' |
-    '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';' | '<' |
-    '=' | '>' | '?' | '@' | '[' | '\\' | ']' | '^' | '_' |
-    '`' | '{' | '|' | '}' | '~' => true
-    _ => false
-  }
+/// Check if c is an escapable ASCII punctuation character.
+/// These characters lose their special meaning when preceded by a backslash.
+pub fn is_escapable(c : UInt16) -> Bool {
+  c == '!' || c == '"' || c == '#' || c == '$' || c == '%' ||
+  c == '&' || c == '\'' || c == '(' || c == ')' || c == '*' ||
+  c == '+' || c == ',' || c == '-' || c == '.' || c == '/' ||
+  c == ':' || c == ';' || c == '<' || c == '=' || c == '>' ||
+  c == '?' || c == '@' || c == '[' || c == '\\' || c == ']' ||
+  c == '^' || c == '_' || c == '`' || c == '{' || c == '|' ||
+  c == '}' || c == '~'
 }

@@ -34,7 +34,7 @@ fn try_open_fence(line : String) -> (String, Int, String)? {
       let mut j = 0
       while j < raw.length() {
         if raw[j] != '`' {
-          clean = clean + raw[j].to_string()
+          clean = clean + raw.substring(start=j, end=j + 1)
         }
         j = j + 1
       }

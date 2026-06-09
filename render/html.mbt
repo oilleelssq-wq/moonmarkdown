@@ -1,5 +1,18 @@
-// HTML renderer: walks the AST and produces HTML output.
+/// HTML renderer: walks the parsed AST and produces HTML output.
+///
+/// The renderer performs a depth-first traversal of the Block and Inline
+/// AST nodes, producing standard HTML5 output. Text content within
+/// inline nodes is automatically escaped to prevent XSS.
+///
+/// # Rendering Rules
+///
+/// - Block elements map to their HTML counterparts (<p>, <h1>-<h6>, etc.)
+/// - Inline elements map to text-level HTML (<em>, <strong>, <a>, etc.)
+/// - Raw HTML blocks and inline HTML are passed through unchanged
+/// - Link reference definitions are not rendered (they are metadata only)
+/// - GFM strikethrough maps to <del>
 
+/// Render a block-level AST node to HTML.
 pub fn render_block(block : @types.Block) -> String {
   match block {
     @types.Block::Document(children) => render_blocks(children)
@@ -48,6 +61,7 @@ pub fn render_block(block : @types.Block) -> String {
   }
 }
 
+/// Render an array of blocks (intermediate helper).
 fn render_blocks(blocks : Array[@types.Block]) -> String {
   let mut html = ""
   let mut i = 0
@@ -58,12 +72,12 @@ fn render_blocks(blocks : Array[@types.Block]) -> String {
   html
 }
 
+/// Render an array of blocks without trailing newlines (for inline contexts).
 fn render_blocks_inline(blocks : Array[@types.Block]) -> String {
   let mut html = ""
   let mut i = 0
   while i < blocks.length() {
     let block_html = render_block(blocks[i])
-    // Strip trailing newline for inline context
     if block_html != "" {
       if block_html[block_html.length() - 1] == '\n' {
         html = html + block_html.substring(start=0, end=block_html.length() - 1)
@@ -76,6 +90,7 @@ fn render_blocks_inline(blocks : Array[@types.Block]) -> String {
   html
 }
 
+/// Render an array of inline AST nodes to HTML.
 pub fn render_inlines(inlines : Array[@types.Inline]) -> String {
   let mut html = ""
   let mut i = 0
@@ -86,6 +101,7 @@ pub fn render_inlines(inlines : Array[@types.Inline]) -> String {
   html
 }
 
+/// Render a single inline AST node to HTML.
 fn render_inline(inline : @types.Inline) -> String {
   match inline {
     @types.Inline::Text(content) => @util.escape_html(content)
@@ -115,7 +131,7 @@ fn render_inline(inline : @types.Inline) -> String {
   }
 }
 
-// Convenience: parse + render in one call.
+/// Convenience function: parse Markdown source and render to HTML in one call.
 pub fn md_to_html(input : String) -> String {
   let lines = @util.scan_lines(input)
   let ast = @block.parse_blocks(lines)

@@ -1,0 +1,84 @@
+// CommonMark spec test runner.
+
+fn min(a : Int, b : Int) -> Int {
+  if a < b { a } else { b }
+}
+
+fn normalize_html(html : String) -> String {
+  // Collapse whitespace sequences to single space
+  let mut result = ""
+  let mut i = 0
+  let len = html.length()
+  let mut last_was_space = false
+  while i < len {
+    let c = html[i]
+    if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
+      if !last_was_space && result != "" {
+        result = result + " "
+      }
+      last_was_space = true
+    } else {
+      result = result + html.substring(start=i, end=i + 1)
+      last_was_space = false
+    }
+    i = i + 1
+  }
+  // Strip trailing space
+  if result.length() > 0 && result[result.length() - 1] == ' ' {
+    result = result.substring(start=0, end=result.length() - 1)
+  }
+  result
+}
+
+test "spec compliance summary" {
+  let mut passed = 0
+  let mut failed = 0
+  let failures = Array::new(capacity=50)
+
+  let mut i = 0
+  while i < spec_cases.length() {
+    let case = spec_cases[i]
+    let ast = @moonmarkdown.parse(case.markdown)
+    let got = @moonmarkdown.render(ast)
+    let expected = case.html
+
+    let norm_got = normalize_html(got)
+    let norm_expected = normalize_html(expected)
+
+    if norm_got == norm_expected {
+      passed = passed + 1
+    } else {
+      failed = failed + 1
+      if failures.length() < 20 {
+        failures.push(case)
+      }
+    }
+    i = i + 1
+  }
+
+  let total = spec_cases.length()
+  let rate = (passed * 100) / total
+  println("\n=== Spec Compliance ===")
+  println("Total:   " + total.to_string())
+  println("Passed:  " + passed.to_string())
+  println("Failed:  " + failed.to_string())
+  println("Rate:    " + rate.to_string() + "%")
+  println("")
+
+  // Show first few failures for debugging
+  if failed > 0 {
+    println("First failures:")
+    let mut j = 0
+    while j < failures.length() {
+      let f = failures[j]
+      println("--- " + f.section + " #" + f.number.to_string() + " ---")
+      let f_ast = @moonmarkdown.parse(f.markdown)
+      let f_got = @moonmarkdown.render(f_ast)
+      println("Input:    " + f.markdown.substring(start=0, end=min(f.markdown.length(), 60)))
+      println("Expected: " + normalize_html(f.html).substring(start=0, end=min(f.html.length(), 80)))
+      println("Got:      " + normalize_html(f_got).substring(start=0, end=min(f_got.length(), 80)))
+      println("")
+      j = j + 1
+    }
+  }
+}
