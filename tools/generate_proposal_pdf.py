@@ -78,9 +78,8 @@ def build_pdf():
     # Basic Info
     pdf.section_title("一、基本信息")
     pdf.key_value("项目名称", "MoonMarkdown：CommonMark 规范 Markdown 解析器")
-    pdf.key_value("参赛者", "wangyichao")
     pdf.key_value("GitHub 仓库", "https://github.com/oilleelssq-wq/moonmarkdown")
-    pdf.key_value("GitLink 仓库", "（待创建镜像）")
+    pdf.key_value("GitLink 仓库", "https://gitlink.org.cn/oillee/moonmarkdown")
     pdf.key_value("项目方向", "MoonBit 基础库 / 文档解析基础设施")
     pdf.key_value("是否移植项目", "否（原创实现，参考 CommonMark 规范 0.31.2）")
     pdf.key_value("许可证", "MIT")
