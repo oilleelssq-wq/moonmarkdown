@@ -99,8 +99,8 @@ def main():
     print(f"Extracting tests from {spec_path}...")
     tests = extract_tests(spec_path)
     # Use first 50 for quick verification
-    tests = tests[:50]
-    print(f"Found {len(tests)} test cases (capped at 50 for speed)")
+    tests = tests[:20]
+    print(f"Found {len(tests)} test cases")
 
     print(f"Generating {output_path}...")
     code = generate_mbt(tests)

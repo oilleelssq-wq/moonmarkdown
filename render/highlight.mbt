@@ -6,6 +6,11 @@ pub fn highlight(code : String, lang : String) -> String {
     "js" | "javascript" | "ts" | "typescript" => highlight_js(code)
     "py" | "python" => highlight_python(code)
     "rs" | "rust" => highlight_rust(code)
+    "go" | "golang" => highlight_go(code)
+    "java" => highlight_java(code)
+    "c" | "cpp" | "c++" => highlight_c(code)
+    "html" | "htm" => highlight_html(code)
+    "css" => highlight_css(code)
     "json" | "yaml" | "yml" | "toml" => highlight_data(code)
     _ => @util.escape_html(code)
   }
@@ -134,4 +139,64 @@ fn highlight_generic(code : String, keywords : Array[String], types : Array[Stri
     i = i + 1
   }
   html
+}
+
+fn highlight_go(code : String) -> String {
+  let kw = [ "break", "case", "chan", "const", "continue", "default", "defer",
+             "else", "fallthrough", "for", "func", "go", "goto", "if", "import",
+             "interface", "map", "package", "range", "return", "select", "struct",
+             "switch", "type", "var", "true", "false", "nil", "make", "new", "append",
+             "len", "cap", "close", "delete", "copy", "panic", "recover" ]
+  let types = [ "int", "int8", "int16", "int32", "int64",
+                "uint", "uint8", "uint16", "uint32", "uint64",
+                "float32", "float64", "string", "bool", "byte", "rune",
+                "error", "complex64", "complex128" ]
+  highlight_generic(code, kw, types)
+}
+
+fn highlight_java(code : String) -> String {
+  let kw = [ "abstract", "assert", "boolean", "break", "byte", "case", "catch",
+             "char", "class", "continue", "default", "do", "double", "else", "enum",
+             "extends", "final", "finally", "float", "for", "if", "implements",
+             "import", "int", "interface", "long", "native", "new", "package",
+             "private", "protected", "public", "return", "short", "static", "strictfp",
+             "super", "switch", "synchronized", "this", "throw", "throws", "transient",
+             "try", "void", "volatile", "while", "true", "false", "null" ]
+  let types = [ "String", "Integer", "Long", "Double", "Float", "Boolean",
+                "Object", "Class", "List", "Map", "Set", "ArrayList", "HashMap" ]
+  highlight_generic(code, kw, types)
+}
+
+fn highlight_c(code : String) -> String {
+  let kw = [ "auto", "break", "case", "char", "const", "continue", "default",
+             "do", "double", "else", "enum", "extern", "float", "for", "goto",
+             "if", "int", "long", "register", "return", "short", "signed",
+             "sizeof", "static", "struct", "switch", "typedef", "union",
+             "unsigned", "void", "volatile", "while", "include", "define",
+             "ifdef", "ifndef", "endif", "pragma", "NULL" ]
+  let types = [ "int", "char", "float", "double", "long", "short",
+                "void", "size_t", "FILE", "bool", "int8_t", "uint8_t",
+                "int16_t", "uint16_t", "int32_t", "uint32_t", "int64_t", "uint64_t" ]
+  highlight_generic(code, kw, types)
+}
+
+fn highlight_html(code : String) -> String {
+  highlight_xml_like(code)
+}
+
+fn highlight_xml_like(code : String) -> String {
+  let result = @util.escape_html(code)
+  result
+}
+
+fn highlight_css(code : String) -> String {
+  let kw = [ "color", "background", "font", "margin", "padding", "border",
+             "display", "position", "width", "height", "top", "left", "right",
+             "bottom", "flex", "grid", "text", "align", "justify", "overflow",
+             "opacity", "transform", "transition", "animation", "none", "auto",
+             "inherit", "initial", "important", "block", "inline", "relative",
+             "absolute", "fixed", "sticky", "center", "bold", "normal", "italic" ]
+  let types = [ "px", "em", "rem", "vh", "vw", "pct", "deg", "s", "ms",
+                "rgb", "rgba", "hsl", "hsla", "hex", "url" ]
+  highlight_generic(code, kw, types)
 }
