@@ -5,29 +5,33 @@ fn min(a : Int, b : Int) -> Int {
 }
 
 fn normalize_html(html : String) -> String {
-  // Collapse whitespace sequences to single space
-  let mut result = ""
-  let mut i = 0
-  let len = html.length()
-  let mut last_was_space = false
-  while i < len {
-    let c = html[i]
-    if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-      if !last_was_space && result != "" {
-        result = result + " "
+  let trimmed = normalize_rec(html, 0, false, "")
+  strip_trailing_space(trimmed, trimmed.length() - 1)
+}
+
+fn normalize_rec(html : String, i : Int, last_was_space : Bool, result : String) -> String {
+  if i >= html.length() { result }
+  else {
+    let ch = html.substring(start=i, end=i + 1)
+    if ch == " " || ch == "\t" || ch == "\n" || ch == "\r" {
+      if last_was_space || result == "" {
+        normalize_rec(html, i + 1, true, result)
+      } else {
+        normalize_rec(html, i + 1, true, result + " ")
       }
-      last_was_space = true
     } else {
-      result = result + html.substring(start=i, end=i + 1)
-      last_was_space = false
+      normalize_rec(html, i + 1, false, result + ch)
     }
-    i = i + 1
   }
-  // Strip trailing space
-  if result.length() > 0 && result[result.length() - 1] == ' ' {
-    result = result.substring(start=0, end=result.length() - 1)
+}
+
+fn strip_trailing_space(s : String, pos : Int) -> String {
+  if pos < 0 { s }
+  else if s.substring(start=pos, end=pos + 1) == " " {
+    s.substring(start=0, end=pos)
+  } else {
+    s
   }
-  result
 }
 
 test "spec compliance summary" {
@@ -65,7 +69,6 @@ test "spec compliance summary" {
   println("Rate:    " + rate.to_string() + "%")
   println("")
 
-  // Show first few failures for debugging
   if failed > 0 {
     println("First failures:")
     let mut j = 0
