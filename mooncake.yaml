@@ -1,5 +1,5 @@
 name: moonmarkdown
-version: 0.1.0
+version: 0.1.2
 description: CommonMark spec-compliant Markdown to HTML parser in pure MoonBit
 repository: https://github.com/oilleelssq-wq/moonmarkdown
 license: MIT
