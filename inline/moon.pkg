@@ -1,4 +1,4 @@
 import {
-  "wangyichao/moonmarkdown/types",
-  "wangyichao/moonmarkdown/util",
+  "oilleelssq-wq/moonmarkdown/types",
+  "oilleelssq-wq/moonmarkdown/util",
 }

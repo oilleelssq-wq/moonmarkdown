@@ -1,5 +1,6 @@
 // ATX and Setext heading parsing.
 
+///|
 fn is_atx_heading(line : String) -> Bool {
   let len = line.length()
   if len == 0 || line[0] != '#' {
@@ -14,6 +15,8 @@ fn is_atx_heading(line : String) -> Bool {
 
 // Parse an ATX heading: 1-6 # characters followed by space and content.
 // Returns None if not an ATX heading.
+
+///|
 fn try_atx_heading(line : String) -> @types.Block? {
   let len = line.length()
   if len == 0 || line[0] != '#' {
@@ -41,7 +44,8 @@ fn try_atx_heading(line : String) -> @types.Block? {
   let content_start = i
   let mut content_end = len
   // Strip trailing spaces
-  while content_end > content_start && (line[content_end - 1] == ' ' || line[content_end - 1] == '\t') {
+  while content_end > content_start &&
+        (line[content_end - 1] == ' ' || line[content_end - 1] == '\t') {
     content_end = content_end - 1
   }
   // Strip trailing # (only if there's a space before the # sequence)
@@ -50,7 +54,9 @@ fn try_atx_heading(line : String) -> @types.Block? {
   while hash_end > content_start && line[hash_end - 1] == '#' {
     hash_end = hash_end - 1
   }
-  if hash_end < content_end && hash_end > content_start && line[hash_end - 1] == ' ' {
+  if hash_end < content_end &&
+    hash_end > content_start &&
+    line[hash_end - 1] == ' ' {
     content_end = hash_end
     // Strip the space before the trailing # as well
     while content_end > content_start && line[content_end - 1] == ' ' {
@@ -67,6 +73,8 @@ fn try_atx_heading(line : String) -> @types.Block? {
 
 // Try to match a setext heading underline on the current line.
 // The previous block must be a paragraph.
+
+///|
 fn try_setext_underline(line : String) -> Int? {
   let len = line.length()
   if len == 0 {

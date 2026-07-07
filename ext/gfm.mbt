@@ -2,7 +2,12 @@
 
 // ---- Tables ----
 
-pub fn try_table(lines : Array[@util.Line], start : Int, len : Int) -> (@types.Block, Int)? {
+///|
+pub fn try_table(
+  lines : Array[@util.Line],
+  start : Int,
+  len : Int,
+) -> (@types.Block, Int)? {
   if start >= len {
     return None
   }
@@ -43,6 +48,7 @@ pub fn try_table(lines : Array[@util.Line], start : Int, len : Int) -> (@types.B
   Some((@types.Block::HTMLBlock(html), consumed))
 }
 
+///|
 fn is_table_delimiter(line : String) -> Bool {
   let len = line.length()
   if len == 0 || line[0] != '|' {
@@ -60,6 +66,7 @@ fn is_table_delimiter(line : String) -> Bool {
   true
 }
 
+///|
 fn parse_table_alignments(line : String) -> Array[String] {
   let result = Array::new(capacity=4)
   let len = line.length()
@@ -72,7 +79,7 @@ fn parse_table_alignments(line : String) -> Array[String] {
     while i < len && line[i] != '|' {
       i = i + 1
     }
-    let cell = trim_spaces(line.substring(start=start, end=i))
+    let cell = trim_spaces(line.substring(start~, end=i))
     let left = cell.length() > 0 && cell[0] == ':'
     let right = cell.length() > 0 && cell[cell.length() - 1] == ':'
     if left && right {
@@ -86,6 +93,7 @@ fn parse_table_alignments(line : String) -> Array[String] {
   result
 }
 
+///|
 fn split_table_row(line : String) -> Array[String] {
   let mut result = Array::new(capacity=4)
   let len = line.length()
@@ -98,7 +106,7 @@ fn split_table_row(line : String) -> Array[String] {
     while i < len && line[i] != '|' {
       i = i + 1
     }
-    let cell = trim_spaces(line.substring(start=start, end=i))
+    let cell = trim_spaces(line.substring(start~, end=i))
     result.push(cell)
   }
   // Skip first empty cell if line starts with |
@@ -118,7 +126,7 @@ fn split_table_row(line : String) -> Array[String] {
   result
 }
 
-
+///|
 fn trim_spaces(s : String) -> String {
   let len = s.length()
   let mut start = 0
@@ -129,15 +137,25 @@ fn trim_spaces(s : String) -> String {
   while end > start && (s[end - 1] == ' ' || s[end - 1] == '\t') {
     end = end - 1
   }
-  s.substring(start=start, end=end)
+  s.substring(start~, end~)
 }
 
-fn render_table(header : Array[String], aligns : Array[String], rows : Array[Array[String]]) -> String {
+///|
+fn render_table(
+  header : Array[String],
+  aligns : Array[String],
+  rows : Array[Array[String]],
+) -> String {
   let mut html = "<table>\n<thead>\n<tr>\n"
   let mut i = 0
   while i < header.length() {
     let align = if i < aligns.length() { aligns[i] } else { "left" }
-    html = html + "<th align=\"" + align + "\">" + html_escape_cell(header[i]) + "</th>\n"
+    html = html +
+      "<th align=\"" +
+      align +
+      "\">" +
+      html_escape_cell(header[i]) +
+      "</th>\n"
     i = i + 1
   }
   html = html + "</tr>\n</thead>\n<tbody>\n"
@@ -147,7 +165,12 @@ fn render_table(header : Array[String], aligns : Array[String], rows : Array[Arr
     let mut c = 0
     while c < rows[r].length() {
       let align = if c < aligns.length() { aligns[c] } else { "left" }
-      html = html + "<td align=\"" + align + "\">" + html_escape_cell(rows[r][c]) + "</td>\n"
+      html = html +
+        "<td align=\"" +
+        align +
+        "\">" +
+        html_escape_cell(rows[r][c]) +
+        "</td>\n"
       c = c + 1
     }
     html = html + "</tr>\n"
@@ -157,12 +180,14 @@ fn render_table(header : Array[String], aligns : Array[String], rows : Array[Arr
   html
 }
 
+///|
 fn html_escape_cell(s : String) -> String {
   @util.escape_html(s)
 }
 
 // ---- Task Lists ----
 
+///|
 pub fn is_task_list_item(line : String) -> (Bool, Bool)? {
   // Check for - [ ] or - [x] pattern
   let len = line.length()
@@ -193,7 +218,11 @@ pub fn is_task_list_item(line : String) -> (Bool, Bool)? {
 
 // ---- Strikethrough ----
 
-pub fn try_strikethrough(text : String, pos : Int) -> (Array[@types.Inline], Int)? {
+///|
+pub fn try_strikethrough(
+  text : String,
+  pos : Int,
+) -> (Array[@types.Inline], Int)? {
   let len = text.length()
   if pos + 4 >= len {
     return None

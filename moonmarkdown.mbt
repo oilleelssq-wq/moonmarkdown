@@ -22,6 +22,7 @@
 /// - Syntax highlighting: MoonBit, JavaScript, Python, Rust
 /// - Zero external dependencies, compiles to Native/Wasm/JS
 
+///|
 /// Parse Markdown source text into an AST.
 ///
 /// Returns a `Block::Document` containing the top-level block nodes.
@@ -30,6 +31,7 @@ pub fn parse(input : String) -> @types.Block {
   @block.parse_blocks(lines)
 }
 
+///|
 /// Render an AST to HTML string.
 ///
 /// Performs depth-first traversal of block and inline nodes
@@ -38,11 +40,12 @@ pub fn render(ast : @types.Block) -> String {
   @render.render_block(ast)
 }
 
+///|
 /// Parse Markdown and render to HTML in one call.
 ///
 /// This is the simplest API for most use cases:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let html = @moonmarkdown.md_to_html("*Hello* World")
 /// // html == "<p><em>Hello</em> World</p>\n"
 /// ```

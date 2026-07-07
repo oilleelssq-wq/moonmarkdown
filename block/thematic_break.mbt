@@ -1,5 +1,6 @@
 // Thematic break parsing: ---, ***, ___ (3 or more, optionally spaced).
 
+///|
 fn is_thematic_break(line : String) -> Bool {
   let len = line.length()
   if len < 3 {

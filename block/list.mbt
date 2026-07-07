@@ -1,5 +1,6 @@
 // List parsing: unordered (-, *, +) and ordered (1., 2.), single-level.
 
+///|
 struct ListInfo {
   ordered : Bool
   start : Int
@@ -7,6 +8,7 @@ struct ListInfo {
   item_marker_len : Int
 }
 
+///|
 fn detect_list_item(line : String) -> ListInfo? {
   let len = line.length()
   if len < 2 {
@@ -28,18 +30,28 @@ fn detect_list_item(line : String) -> ListInfo? {
       num = num * 10 + line[i].to_int() - 0x30
       i = i + 1
     }
-    if i < len - 1 && (line[i] == '.' || line[i] == ')') && (line[i + 1] == ' ' || line[i + 1] == '\t') {
-      return Some({ ordered: true, start: num, marker: line[i], item_marker_len: i })
+    if i < len - 1 &&
+      (line[i] == '.' || line[i] == ')') &&
+      (line[i + 1] == ' ' || line[i + 1] == '\t') {
+      return Some({
+        ordered: true,
+        start: num,
+        marker: line[i],
+        item_marker_len: i,
+      })
     }
   }
   None
 }
 
+///|
 fn strip_list_marker(line : String, info : ListInfo) -> String {
   let mut i = info.item_marker_len + 1 // skip marker + space
   // Skip up to 3 optional spaces after marker
   let mut space_count = 0
-  while i < line.length() && (line[i] == ' ' || line[i] == '\t') && space_count < 3 {
+  while i < line.length() &&
+        (line[i] == ' ' || line[i] == '\t') &&
+        space_count < 3 {
     i = i + 1
     space_count = space_count + 1
   }

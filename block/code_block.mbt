@@ -2,6 +2,7 @@
 
 // Check if a line starts a fenced code block.
 // Returns (fence_char, fence_length, info_string) or None.
+///|
 fn try_open_fence(line : String) -> (String, Int, String)? {
   let len = line.length()
   if len < 3 {
@@ -49,6 +50,8 @@ fn try_open_fence(line : String) -> (String, Int, String)? {
 }
 
 // Check if a line closes a fenced code block.
+
+///|
 fn is_closing_fence(line : String, fence_char : String, min_len : Int) -> Bool {
   let len = line.length()
   let fc = fence_char[0]

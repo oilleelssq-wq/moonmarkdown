@@ -1,5 +1,6 @@
 // Inline parser: converts raw text within leaf blocks to inline AST nodes.
 
+///|
 pub fn parse_inlines(text : String) -> Array[@types.Inline] {
   if text == "" {
     return []
@@ -8,16 +9,19 @@ pub fn parse_inlines(text : String) -> Array[@types.Inline] {
   p.parse()
 }
 
+///|
 struct InlineParser {
   text : String
   len : Int
   mut pos : Int
 }
 
+///|
 fn InlineParser::new(text : String) -> InlineParser {
-  { text: text, len: text.length(), pos: 0 }
+  { text, len: text.length(), pos: 0 }
 }
 
+///|
 fn InlineParser::parse(self : InlineParser) -> Array[@types.Inline] {
   let inlines = Array::new(capacity=8)
   let mut buf = ""
@@ -48,7 +52,11 @@ fn InlineParser::parse(self : InlineParser) -> Array[@types.Inline] {
           inlines.push(@types.Inline::Text(buf))
           buf = ""
         }
-        inlines.push(@types.Inline::Text(self.text.substring(start=self.pos + 1, end=self.pos + 2)))
+        inlines.push(
+          @types.Inline::Text(
+            self.text.substring(start=self.pos + 1, end=self.pos + 2),
+          ),
+        )
         self.pos = self.pos + 2
         continue
       }
@@ -124,7 +132,9 @@ fn InlineParser::parse(self : InlineParser) -> Array[@types.Inline] {
         }
         inlines.push(@types.Inline::HardBreak)
         self.pos = self.pos + 1
-        if self.pos + 1 < self.len && self.text[self.pos] == '\r' && self.text[self.pos + 1] == '\n' {
+        if self.pos + 1 < self.len &&
+          self.text[self.pos] == '\r' &&
+          self.text[self.pos + 1] == '\n' {
           self.pos = self.pos + 2
         } else {
           self.pos = self.pos + 1
@@ -157,7 +167,11 @@ fn InlineParser::parse(self : InlineParser) -> Array[@types.Inline] {
 
 // --- Emphasis ---
 
-fn InlineParser::try_emphasis(self : InlineParser, marker : UInt16) -> Option[Array[@types.Inline]] {
+///|
+fn InlineParser::try_emphasis(
+  self : InlineParser,
+  marker : UInt16,
+) -> Array[@types.Inline]? {
   let start = self.pos
   // Count delimiters
   let mut count = 0
@@ -166,7 +180,10 @@ fn InlineParser::try_emphasis(self : InlineParser, marker : UInt16) -> Option[Ar
     self.pos = self.pos + 1
   }
   // Check left-flanking: cannot be followed by space or at end
-  let can_open = self.pos < self.len && self.text[self.pos] != ' ' && self.text[self.pos] != '\t' && self.text[self.pos] != '\n'
+  let can_open = self.pos < self.len &&
+    self.text[self.pos] != ' ' &&
+    self.text[self.pos] != '\t' &&
+    self.text[self.pos] != '\n'
   if !can_open {
     self.pos = start
     return None
@@ -178,7 +195,11 @@ fn InlineParser::try_emphasis(self : InlineParser, marker : UInt16) -> Option[Ar
   while close_pos < self.len {
     if self.text[close_pos] == marker {
       // Check if this is a valid closer
-      let can_close = close_pos > content_start && (close_pos == 0 || (self.text[close_pos - 1] != ' ' && self.text[close_pos - 1] != '\t'))
+      let can_close = close_pos > content_start &&
+        (
+          close_pos == 0 ||
+          (self.text[close_pos - 1] != ' ' && self.text[close_pos - 1] != '\t')
+        )
       if can_close {
         let mut ccount = 0
         let mut cp = close_pos
@@ -188,7 +209,10 @@ fn InlineParser::try_emphasis(self : InlineParser, marker : UInt16) -> Option[Ar
         }
         if ccount == count {
           // Found! Parse content and wrap
-          let inner_text = self.text.substring(start=content_start, end=close_pos)
+          let inner_text = self.text.substring(
+            start=content_start,
+            end=close_pos,
+          )
           let inner_inlines = parse_inlines(inner_text)
           let node = if count == 1 {
             @types.Inline::Emphasis(inner_inlines)
@@ -212,7 +236,8 @@ fn InlineParser::try_emphasis(self : InlineParser, marker : UInt16) -> Option[Ar
 
 // --- Links ---
 
-fn InlineParser::try_link(self : InlineParser) -> Option[Array[@types.Inline]] {
+///|
+fn InlineParser::try_link(self : InlineParser) -> Array[@types.Inline]? {
   let start = self.pos
   self.pos = self.pos + 1 // skip [
   // Find closing ]
@@ -220,7 +245,9 @@ fn InlineParser::try_link(self : InlineParser) -> Option[Array[@types.Inline]] {
   while text_end < self.len && self.text[text_end] != ']' {
     text_end = text_end + 1
   }
-  if text_end >= self.len || text_end + 1 >= self.len || self.text[text_end + 1] != '(' {
+  if text_end >= self.len ||
+    text_end + 1 >= self.len ||
+    self.text[text_end + 1] != '(' {
     self.pos = start
     return None
   }
@@ -247,13 +274,16 @@ fn InlineParser::try_link(self : InlineParser) -> Option[Array[@types.Inline]] {
   let mut url_end_pos = url_part.length()
   // Find optional title
   let mut space_pos = 0
-  while space_pos < url_part.length() && url_part[space_pos] != ' ' && url_part[space_pos] != '\t' {
+  while space_pos < url_part.length() &&
+        url_part[space_pos] != ' ' &&
+        url_part[space_pos] != '\t' {
     space_pos = space_pos + 1
   }
   let url = if space_pos < url_part.length() {
     let real_url = url_part.substring(start=0, end=space_pos)
     let mut ti = space_pos
-    while ti < url_part.length() && (url_part[ti] == ' ' || url_part[ti] == '\t') {
+    while ti < url_part.length() &&
+          (url_part[ti] == ' ' || url_part[ti] == '\t') {
       ti = ti + 1
     }
     if ti < url_part.length() {
@@ -286,7 +316,9 @@ fn InlineParser::try_link(self : InlineParser) -> Option[Array[@types.Inline]] {
     url_part
   }
   // Strip optional < > around URL
-  let final_url = if url.length() > 2 && url[0] == '<' && url[url.length() - 1] == '>' {
+  let final_url = if url.length() > 2 &&
+    url[0] == '<' &&
+    url[url.length() - 1] == '>' {
     url.substring(start=1, end=url.length() - 1)
   } else {
     url
@@ -300,42 +332,51 @@ fn InlineParser::try_link(self : InlineParser) -> Option[Array[@types.Inline]] {
 
 // --- Image ---
 
-fn InlineParser::try_image(self : InlineParser) -> Option[@types.Inline] {
+///|
+fn InlineParser::try_image(self : InlineParser) -> @types.Inline? {
   let start = self.pos
   self.pos = self.pos + 1 // skip !
   let link = self.try_link()
   match link {
-    Some(nodes) => {
+    Some(nodes) =>
       if nodes.length() == 1 {
         match nodes[0] {
-          @types.Inline::Link(children, url, title) => {
+          @types.Inline::Link(children, url, title) =>
             Some(@types.Inline::Image(children, url, title))
+          _ => {
+            self.pos = start
+            None
           }
-          _ => { self.pos = start; None }
         }
       } else {
         self.pos = start
         None
       }
+    _ => {
+      self.pos = start
+      None
     }
-    _ => { self.pos = start; None }
   }
 }
 
 // --- Autolink ---
 
-fn InlineParser::try_autolink(self : InlineParser) -> Option[@types.Inline] {
+///|
+fn InlineParser::try_autolink(self : InlineParser) -> @types.Inline? {
   let start = self.pos
   self.pos = self.pos + 1 // skip <
   let mut end = self.pos
-  while end < self.len && self.text[end] != '>' && self.text[end] != '\n' && self.text[end] != ' ' {
+  while end < self.len &&
+        self.text[end] != '>' &&
+        self.text[end] != '\n' &&
+        self.text[end] != ' ' {
     end = end + 1
   }
   if end >= self.len || self.text[end] != '>' {
     self.pos = start
     return None
   }
-  let content = self.text.substring(start=self.pos, end=end)
+  let content = self.text.substring(start=self.pos, end~)
   if content == "" || content[0] == '>' {
     self.pos = start
     return None
@@ -346,7 +387,8 @@ fn InlineParser::try_autolink(self : InlineParser) -> Option[@types.Inline] {
 
 // --- Code Span ---
 
-fn InlineParser::try_code_span(self : InlineParser) -> Option[String] {
+///|
+fn InlineParser::try_code_span(self : InlineParser) -> String? {
   let start = self.pos
   let mut open_count = 0
   while self.pos < self.len && self.text[self.pos] == '`' {
@@ -358,7 +400,9 @@ fn InlineParser::try_code_span(self : InlineParser) -> Option[String] {
     if self.text[search] == '`' {
       let mut close_count = 0
       let mut scan = search
-      while scan < self.len && self.text[scan] == '`' && close_count < open_count {
+      while scan < self.len &&
+            self.text[scan] == '`' &&
+            close_count < open_count {
         close_count = close_count + 1
         scan = scan + 1
       }
@@ -376,6 +420,7 @@ fn InlineParser::try_code_span(self : InlineParser) -> Option[String] {
   None
 }
 
+///|
 fn normalize_code_content(s : String) -> String {
   let len = s.length()
   if len == 0 {
@@ -396,11 +441,38 @@ fn normalize_code_content(s : String) -> String {
 
 // --- Utilities ---
 
+///|
 fn is_escapable(c : UInt16) -> Bool {
-  c == '!' || c == '"' || c == '#' || c == '$' || c == '%' || c == '&' ||
-  c == '\'' || c == '(' || c == ')' || c == '*' || c == '+' || c == ',' ||
-  c == '-' || c == '.' || c == '/' || c == ':' || c == ';' || c == '<' ||
-  c == '=' || c == '>' || c == '?' || c == '@' || c == '[' || c == '\\' ||
-  c == ']' || c == '^' || c == '_' || c == '`' || c == '{' || c == '|' ||
-  c == '}' || c == '~'
+  c == '!' ||
+  c == '"' ||
+  c == '#' ||
+  c == '$' ||
+  c == '%' ||
+  c == '&' ||
+  c == '\'' ||
+  c == '(' ||
+  c == ')' ||
+  c == '*' ||
+  c == '+' ||
+  c == ',' ||
+  c == '-' ||
+  c == '.' ||
+  c == '/' ||
+  c == ':' ||
+  c == ';' ||
+  c == '<' ||
+  c == '=' ||
+  c == '>' ||
+  c == '?' ||
+  c == '@' ||
+  c == '[' ||
+  c == '\\' ||
+  c == ']' ||
+  c == '^' ||
+  c == '_' ||
+  c == '`' ||
+  c == '{' ||
+  c == '|' ||
+  c == '}' ||
+  c == '~'
 }

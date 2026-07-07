@@ -9,16 +9,16 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "wangyichao/moonmarkdown"
+name = "oilleelssq-wq/moonmarkdown"
 
-version = "0.1.0"
+version = "0.1.1"
 
 readme = "README.md"
 
-repository = "https://github.com/oilleelssq-wq/moonmarkdown"
+repository = "https://gitlink.org.cn/oillee/moonmarkdown"
 
 license = "MIT"
 
-keywords = ["markdown", "commonmark", "html", "parser", "gfm"]
+keywords = [ "markdown", "commonmark", "html", "parser", "gfm" ]
 
 description = "A CommonMark spec-compliant Markdown to HTML parser written in pure MoonBit"

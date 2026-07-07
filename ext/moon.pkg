@@ -1,6 +1,5 @@
 import {
-  "wangyichao/moonmarkdown/types",
-  "wangyichao/moonmarkdown/util",
-  "wangyichao/moonmarkdown/inline",
+  "oilleelssq-wq/moonmarkdown/types",
+  "oilleelssq-wq/moonmarkdown/util",
+  "oilleelssq-wq/moonmarkdown/inline",
 }
-

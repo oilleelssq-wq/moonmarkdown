@@ -1,3 +1,4 @@
+///|
 /// CommonMark Inline-level AST node types.
 ///
 /// Inline nodes represent formatted content within leaf blocks
@@ -27,7 +28,6 @@
 /// ## Raw Content
 /// - `RawHTML` — inline HTML passed through unchanged
 /// - `HtmlEntity` — decoded HTML entity reference
-
 pub(all) enum Inline {
   /// Plain text. Always HTML-escaped during rendering.
   Text(String)

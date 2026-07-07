@@ -1,3 +1,4 @@
+///|
 /// CommonMark Block-level AST node types.
 ///
 /// This enum represents all block-level constructs defined by the
@@ -24,7 +25,6 @@
 ///
 /// ## Meta Blocks
 /// - `LinkReferenceDefinition` — parsed but not rendered directly
-
 pub(all) enum Block {
   /// Root of the document tree.
   Document(Array[Block])

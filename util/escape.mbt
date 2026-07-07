@@ -1,5 +1,6 @@
 // HTML entity decoding and backslash escape utilities.
 
+///|
 pub fn decode_entity(name : String) -> String? {
   if name == "" {
     return None
@@ -15,6 +16,7 @@ pub fn decode_entity(name : String) -> String? {
   }
 }
 
+///|
 fn decode_hex_entity(hex : String) -> String? {
   let mut val = 0
   let mut i = 0
@@ -41,6 +43,7 @@ fn decode_hex_entity(hex : String) -> String? {
   }
 }
 
+///|
 fn decode_dec_entity(dec : String) -> String? {
   let mut val = 0
   let mut i = 0
@@ -63,6 +66,7 @@ fn decode_dec_entity(dec : String) -> String? {
   }
 }
 
+///|
 fn lookup_named_entity(name : String) -> String? {
   match name {
     "amp" => Some("&")
@@ -133,6 +137,7 @@ fn lookup_named_entity(name : String) -> String? {
   }
 }
 
+///|
 pub fn escape_html(s : String) -> String {
   let mut result = ""
   let mut i = 0

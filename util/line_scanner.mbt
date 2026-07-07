@@ -3,6 +3,7 @@
 /// Handles `\r\n`, `\r`, and `\n` line endings (all normalized to `\n`
 /// in the output). Trailing spaces are stripped per CommonMark spec.
 
+///|
 /// A line in the source document with position metadata.
 pub(all) struct Line {
   /// Line content with trailing whitespace stripped.
@@ -15,10 +16,11 @@ pub(all) struct Line {
   pub ending : Int
 }
 
+///|
 /// Split source text into lines.
 /// Each line has trailing spaces stripped and `\r\n` normalized to `\n`.
 pub fn scan_lines(src : String) -> Array[Line] {
-  let lines = Array::new(capacity=(src.length() / 40 + 10))
+  let lines = Array::new(capacity=src.length() / 40 + 10)
   let len = src.length()
   let mut pos = 0
   let mut i = 0
@@ -27,17 +29,32 @@ pub fn scan_lines(src : String) -> Array[Line] {
     if c == '\n' {
       let content = src.substring(start=pos, end=i)
       let stripped = strip_trailing_spaces(content)
-      lines.push(Line::{ content: stripped, offset: pos, is_blank: stripped == "", ending: 1 })
+      lines.push(Line::{
+        content: stripped,
+        offset: pos,
+        is_blank: stripped == "",
+        ending: 1,
+      })
       pos = i + 1
     } else if c == '\r' {
       let content = src.substring(start=pos, end=i)
       let stripped = strip_trailing_spaces(content)
       if i + 1 < len && src[i + 1] == '\n' {
-        lines.push(Line::{ content: stripped, offset: pos, is_blank: stripped == "", ending: 2 })
+        lines.push(Line::{
+          content: stripped,
+          offset: pos,
+          is_blank: stripped == "",
+          ending: 2,
+        })
         pos = i + 2
         i = i + 1
       } else {
-        lines.push(Line::{ content: stripped, offset: pos, is_blank: stripped == "", ending: 1 })
+        lines.push(Line::{
+          content: stripped,
+          offset: pos,
+          is_blank: stripped == "",
+          ending: 1,
+        })
         pos = i + 1
       }
     }
@@ -46,11 +63,17 @@ pub fn scan_lines(src : String) -> Array[Line] {
   if pos <= len {
     let content = src.substring(start=pos, end=len)
     let stripped = strip_trailing_spaces(content)
-    lines.push(Line::{ content: stripped, offset: pos, is_blank: stripped == "", ending: 0 })
+    lines.push(Line::{
+      content: stripped,
+      offset: pos,
+      is_blank: stripped == "",
+      ending: 0,
+    })
   }
   lines
 }
 
+///|
 /// Strip trailing spaces and tabs from a line.
 fn strip_trailing_spaces(s : String) -> String {
   let end = s.length()
@@ -69,11 +92,12 @@ fn strip_trailing_spaces(s : String) -> String {
   }
 }
 
+///|
 /// Get the raw content of a line from the original source.
 pub fn raw_line_content(src : String, line : Line) -> String {
   let end = line.offset + line.content.length()
   if line.ending == 2 {
-    src.substring(start=line.offset, end=end)
+    src.substring(start=line.offset, end~)
   } else if line.ending == 1 {
     if line.offset + line.content.length() < src.length() {
       src.substring(start=line.offset, end=line.offset + line.content.length())

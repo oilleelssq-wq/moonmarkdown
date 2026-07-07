@@ -1,5 +1,6 @@
 // Main block parser: orchestrates line-by-line block recognition.
 
+///|
 pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
   let children = Array::new(capacity=lines.length() / 2)
   let len = lines.length()
@@ -26,7 +27,9 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
           code_lines.push(lines[pos].content)
           pos = pos + 1
         }
-        children.push(@types.Block::FencedCodeBlock(info, join_lines(code_lines)))
+        children.push(
+          @types.Block::FencedCodeBlock(info, join_lines(code_lines)),
+        )
         continue
       }
       _ => ()
@@ -62,13 +65,14 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
       let quote_lines = collect_blockquote_lines(lines, pos, len)
       let inner = parse_blocks(quote_lines)
       match inner {
-        @types.Block::Document(inner_children) => {
+        @types.Block::Document(inner_children) =>
           children.push(@types.Block::BlockQuote(inner_children))
-        }
         _ => children.push(@types.Block::BlockQuote([inner]))
       }
       pos = pos + 1
-      while pos < len && lines[pos].content != "" && lines[pos].content[0] == '>' {
+      while pos < len &&
+            lines[pos].content != "" &&
+            lines[pos].content[0] == '>' {
         pos = pos + 1
       }
       continue
@@ -92,12 +96,18 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
         let consumed = list_children.1
         pos = pos + consumed
         let tight = is_tight_list(list_items)
-        children.push(@types.Block::List(
-          if list_info.ordered { Some(list_info.start) } else { None },
-          tight,
-          list_info.marker,
-          list_items,
-        ))
+        children.push(
+          @types.Block::List(
+            if list_info.ordered {
+              Some(list_info.start)
+            } else {
+              None
+            },
+            tight,
+            list_info.marker,
+            list_items,
+          ),
+        )
         continue
       }
       _ => ()
@@ -106,7 +116,14 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
     // Indented code block (4+ spaces)
     if content.length() >= 4 && check_four_spaces(content) {
       let code_lines = Array::new(capacity=4)
-      while pos < len && (lines[pos].is_blank || (lines[pos].content.length() >= 4 && check_four_spaces(lines[pos].content))) {
+      while pos < len &&
+            (
+              lines[pos].is_blank ||
+              (
+                lines[pos].content.length() >= 4 &&
+                check_four_spaces(lines[pos].content)
+              )
+            ) {
         let lc = lines[pos].content
         if lc.length() >= 4 && check_four_spaces(lc) {
           code_lines.push(lc.substring(start=4))
@@ -121,7 +138,9 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
 
     // Paragraph (fallback)
     let para_lines = Array::new(capacity=4)
-    while pos < len && !lines[pos].is_blank && !is_block_start(lines[pos].content) {
+    while pos < len &&
+          !lines[pos].is_blank &&
+          !is_block_start(lines[pos].content) {
       para_lines.push(lines[pos].content)
       pos = pos + 1
     }
@@ -147,6 +166,7 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
   @types.Block::Document(children)
 }
 
+///|
 fn check_four_spaces(s : String) -> Bool {
   if s.length() < 4 {
     return false
@@ -161,6 +181,7 @@ fn check_four_spaces(s : String) -> Bool {
   true
 }
 
+///|
 fn join_lines(lines : Array[String]) -> String {
   let mut result = ""
   let mut i = 0
@@ -174,7 +195,12 @@ fn join_lines(lines : Array[String]) -> String {
   result
 }
 
-fn collect_blockquote_lines(lines : Array[@util.Line], start : Int, len : Int) -> Array[@util.Line] {
+///|
+fn collect_blockquote_lines(
+  lines : Array[@util.Line],
+  start : Int,
+  len : Int,
+) -> Array[@util.Line] {
   let result = Array::new(capacity=4)
   let mut i = start
   while i < len {
@@ -187,9 +213,19 @@ fn collect_blockquote_lines(lines : Array[@util.Line], start : Int, len : Int) -
       } else {
         ""
       }
-      result.push(@util.Line::{ content: inner, offset: 0, is_blank: inner == "", ending: 0 })
+      result.push(@util.Line::{
+        content: inner,
+        offset: 0,
+        is_blank: inner == "",
+        ending: 0,
+      })
     } else {
-      result.push(@util.Line::{ content: content, offset: 0, is_blank: content == "", ending: 0 })
+      result.push(@util.Line::{
+        content,
+        offset: 0,
+        is_blank: content == "",
+        ending: 0,
+      })
     }
     i = i + 1
   }
@@ -197,6 +233,8 @@ fn collect_blockquote_lines(lines : Array[@util.Line], start : Int, len : Int) -
 }
 
 // LRD parsing
+
+///|
 fn try_lrd(line : String) -> (String, String, String?)? {
   let len = line.length()
   if len == 0 || line[0] != '[' {
@@ -275,6 +313,8 @@ fn try_lrd(line : String) -> (String, String, String?)? {
 }
 
 // Extract raw heading text (after # prefix and before trailing #).
+
+///|
 fn extract_heading_text(line : String) -> String {
   let len = line.length()
   let mut i = 0
@@ -304,14 +344,21 @@ fn extract_heading_text(line : String) -> String {
     }
   }
   if start < end {
-    line.substring(start=start, end=end)
+    line.substring(start~, end~)
   } else {
     ""
   }
 }
 
 // List item parsing: returns (items, lines_consumed)
-fn parse_list_items(lines : Array[@util.Line], start : Int, len : Int, first_info : ListInfo) -> (Array[@types.Block], Int) {
+
+///|
+fn parse_list_items(
+  lines : Array[@util.Line],
+  start : Int,
+  len : Int,
+  first_info : ListInfo,
+) -> (Array[@types.Block], Int) {
   let items = Array::new(capacity=4)
   let mut pos = start
   let mut info = first_info
@@ -326,7 +373,9 @@ fn parse_list_items(lines : Array[@util.Line], start : Int, len : Int, first_inf
       let lc = lines[pos].content
       if lc == "" {
         pos = pos + 1
-        if pos < len && detect_list_item(lines[pos].content).is_none() && !is_block_start(lines[pos].content) {
+        if pos < len &&
+          detect_list_item(lines[pos].content).is_none() &&
+          !is_block_start(lines[pos].content) {
           item_lines.push("")
         } else {
           break
@@ -362,6 +411,7 @@ fn parse_list_items(lines : Array[@util.Line], start : Int, len : Int, first_inf
   (items, pos - start)
 }
 
+///|
 fn is_tight_list(items : Array[@types.Block]) -> Bool {
   // Default tight for single-level lists
   true
