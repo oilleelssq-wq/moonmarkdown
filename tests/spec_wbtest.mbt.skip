@@ -33,7 +33,7 @@ fn normalize_html(html : String) -> String {
 test "spec compliance summary" {
   let mut passed = 0
   let mut failed = 0
-  let failures = Array::new(capacity=50)
+  let failures : Array[SpecCase] = []
 
   let mut i = 0
   while i < spec_cases.length() {
