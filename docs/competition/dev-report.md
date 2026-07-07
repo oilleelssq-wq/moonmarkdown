@@ -57,8 +57,8 @@ MoonMarkdown 是一个纯 MoonBit 实现的 CommonMark 规范 Markdown 解析器
 
 - 55 个黑盒测试覆盖所有公开 API
 - 6 个白盒测试模块覆盖内部解析函数（100+ 附加测试）
-- CommonMark Spec 测试框架集成（651 个用例提取和运行器）
-- CI/CD 工作流配置（GitHub Actions：check + build + test）
+- CommonMark Spec 测试框架集成（651 个用例提取框架已就绪，完整 Spec 兼容率提升为后续工作）
+- CI/CD 工作流配置（GitHub Actions：check + build + test，已通过）
 
 ## 技术架构
 
@@ -97,19 +97,18 @@ Source Text
 | GFM 扩展白盒测试 | 17+ | 全部通过 |
 | **合计** | **161+** | **全部通过** |
 
-编译状态：0 errors, 0 warnings（除标准库 deprecated 提示）
+编译状态：0 errors, 0 warnings（通过 `moon check --deny-warn` 和 `moon test --deny-warn` 严格检查）
 
 ## 项目统计
 
-- MoonBit 源码：约 3,550 行
-- 源文件数：21 个 .mbt 文件
-- 包数量：6 个（types、util、block、inline、render、ext）
-- Git 提交：16 次
+- MoonBit 源码：约 4,380 行
+- 源文件数：28 个 .mbt 文件
+- 包数量：8 个（types、util、block、inline、render、ext、tests、cmd/main）
+- Git 提交：30 次
 - 依赖：零外部依赖
 
 ## 后续计划
 
 - Spec 合规率提升至 400+/651（当前框架已就绪，需调试性能瓶颈）
-- 发布至 mooncakes.io 包注册表
 - 支持更多 GFM 扩展（脚注、定义列表）
 - 与 MoonTemplate 集成形成静态站点生成工具链

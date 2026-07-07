@@ -79,7 +79,7 @@ fn parse_table_alignments(line : String) -> Array[String] {
     while i < len && line[i] != '|' {
       i = i + 1
     }
-    let cell = trim_spaces(line.substring(start~, end=i))
+    let cell = trim_spaces(line[start:i].to_owned())
     let left = cell.length() > 0 && cell[0] == ':'
     let right = cell.length() > 0 && cell[cell.length() - 1] == ':'
     if left && right {
@@ -106,7 +106,7 @@ fn split_table_row(line : String) -> Array[String] {
     while i < len && line[i] != '|' {
       i = i + 1
     }
-    let cell = trim_spaces(line.substring(start~, end=i))
+    let cell = trim_spaces(line[start:i].to_owned())
     result.push(cell)
   }
   // Skip first empty cell if line starts with |
@@ -137,7 +137,7 @@ fn trim_spaces(s : String) -> String {
   while end > start && (s[end - 1] == ' ' || s[end - 1] == '\t') {
     end = end - 1
   }
-  s.substring(start~, end~)
+  s[start:end].to_owned()
 }
 
 ///|
@@ -234,7 +234,7 @@ pub fn try_strikethrough(
   let mut i = pos + 2
   while i + 1 < len {
     if text[i] == '~' && text[i + 1] == '~' {
-      let inner = text.substring(start=pos + 2, end=i)
+      let inner = text[pos + 2:i].to_owned()
       let inlines = @inline.parse_inlines(inner)
       let result = Array::new(capacity=1)
       result.push(@types.Inline::Strikethrough(inlines))

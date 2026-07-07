@@ -29,14 +29,14 @@ fn try_open_fence(line : String) -> (String, Int, String)? {
   }
   // Info string
   let info = if i < len {
-    let raw = line.substring(start=i)
+    let raw = line[i:].to_owned()
     if c == '`' {
       // Strip any ` characters from info string of backtick fences
       let mut clean = ""
       let mut j = 0
       while j < raw.length() {
         if raw[j] != '`' {
-          clean = clean + raw.substring(start=j, end=j + 1)
+          clean = clean + raw[j:j + 1].to_owned()
         }
         j = j + 1
       }

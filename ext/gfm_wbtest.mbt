@@ -80,7 +80,7 @@ test "is_task_list_item unchecked" {
 
 ///|
 test "is_task_list_item not a task" {
-  assert_eq(is_task_list_item("- regular item").is_none(), true)
+  assert_true(is_task_list_item("- regular item") is None)
 }
 
 ///|
@@ -96,7 +96,7 @@ test "try_strikethrough basic" {
 
 ///|
 test "try_strikethrough not found" {
-  assert_eq(try_strikethrough("no tildes", 0).is_none(), true)
+  assert_true(try_strikethrough("no tildes", 0) is None)
 }
 
 ///|

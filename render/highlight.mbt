@@ -102,7 +102,7 @@ fn highlight_generic(
       }
       html = html +
         "<span class=\"c\">" +
-        @util.escape_html(code.substring(start=i, end=j)) +
+        @util.escape_html(code[i:j].to_owned()) +
         "</span>"
       i = j
       continue
@@ -122,7 +122,7 @@ fn highlight_generic(
       }
       html = html +
         "<span class=\"s\">" +
-        @util.escape_html(code.substring(start~, end=i)) +
+        @util.escape_html(code[start:i].to_owned()) +
         "</span>"
       continue
     }
@@ -142,7 +142,7 @@ fn highlight_generic(
       }
       html = html +
         "<span class=\"m\">" +
-        @util.escape_html(code.substring(start~, end=i)) +
+        @util.escape_html(code[start:i].to_owned()) +
         "</span>"
       continue
     }
@@ -158,7 +158,7 @@ fn highlight_generic(
             ) {
         i = i + 1
       }
-      let word = code.substring(start~, end=i)
+      let word = code[start:i].to_owned()
       let mut found = false
       // Check keywords
       let mut ki = 0
@@ -193,7 +193,7 @@ fn highlight_generic(
       }
       continue
     }
-    html = html + @util.escape_html(code.substring(start=i, end=i + 1))
+    html = html + @util.escape_html(code[i:i + 1].to_owned())
     i = i + 1
   }
   html

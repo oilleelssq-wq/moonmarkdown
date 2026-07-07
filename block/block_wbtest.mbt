@@ -138,8 +138,8 @@ test "detect_list_item ordered with paren" {
 
 ///|
 test "detect_list_item not a list" {
-  assert_eq(detect_list_item("plain text").is_none(), true)
-  assert_eq(detect_list_item("").is_none(), true)
+  assert_true(detect_list_item("plain text") is None)
+  assert_true(detect_list_item("") is None)
 }
 
 ///|
@@ -190,7 +190,7 @@ test "try_lrd basic" {
     Some((label, url, title)) => {
       assert_eq(label, "ref")
       assert_eq(url, "https://example.com")
-      assert_eq(title.is_none(), true)
+      assert_true(title is None)
     }
     _ => assert_eq("should match", "did not")
   }
@@ -199,13 +199,14 @@ test "try_lrd basic" {
 ///|
 test "try_lrd with title" {
   match try_lrd("[ref]: https://example.com \"title\"") {
-    Some((_, _, title)) => assert_eq(title, Some("title"))
+    Some((_, _, Some(title))) => assert_eq(title, "title")
+    Some((_, _, None)) => assert_eq("expected title", "missing title")
     _ => assert_eq("should match", "did not")
   }
 }
 
 ///|
 test "try_lrd not a definition" {
-  assert_eq(try_lrd("not an LRD").is_none(), true)
-  assert_eq(try_lrd("[incomplete").is_none(), true)
+  assert_true(try_lrd("not an LRD") is None)
+  assert_true(try_lrd("[incomplete") is None)
 }

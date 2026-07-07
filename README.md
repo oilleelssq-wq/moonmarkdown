@@ -18,7 +18,7 @@ MoonBit ecosystem has `@mizchi/markdown` (fast but 38% spec-compatible) and `Cma
 ## Installation
 
 ```bash
-moon add oillee/moonmarkdown
+moon add oilleelssq-wq/moonmarkdown
 ```
 
 ## Usage

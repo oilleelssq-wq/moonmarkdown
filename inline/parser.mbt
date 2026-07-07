@@ -10,7 +10,7 @@ pub fn parse_inlines(text : String) -> Array[@types.Inline] {
 }
 
 ///|
-struct InlineParser {
+priv struct InlineParser {
   text : String
   len : Int
   mut pos : Int
@@ -53,9 +53,7 @@ fn InlineParser::parse(self : InlineParser) -> Array[@types.Inline] {
           buf = ""
         }
         inlines.push(
-          @types.Inline::Text(
-            self.text.substring(start=self.pos + 1, end=self.pos + 2),
-          ),
+          @types.Inline::Text(self.text[self.pos + 1:self.pos + 2].to_owned()),
         )
         self.pos = self.pos + 2
         continue
@@ -156,7 +154,7 @@ fn InlineParser::parse(self : InlineParser) -> Array[@types.Inline] {
       }
       continue
     }
-    buf = buf + self.text.substring(start=self.pos, end=self.pos + 1)
+    buf = buf + self.text[self.pos:self.pos + 1].to_owned()
     self.pos = self.pos + 1
   }
   if buf != "" {
@@ -190,7 +188,6 @@ fn InlineParser::try_emphasis(
   }
   // Find matching closer
   let content_start = self.pos
-  let mut found_close = false
   let mut close_pos = content_start
   while close_pos < self.len {
     if self.text[close_pos] == marker {
@@ -209,10 +206,7 @@ fn InlineParser::try_emphasis(
         }
         if ccount == count {
           // Found! Parse content and wrap
-          let inner_text = self.text.substring(
-            start=content_start,
-            end=close_pos,
-          )
+          let inner_text = self.text[content_start:close_pos].to_owned()
           let inner_inlines = parse_inlines(inner_text)
           let node = if count == 1 {
             @types.Inline::Emphasis(inner_inlines)
@@ -251,7 +245,7 @@ fn InlineParser::try_link(self : InlineParser) -> Array[@types.Inline]? {
     self.pos = start
     return None
   }
-  let link_text = self.text.substring(start=self.pos, end=text_end)
+  let link_text = self.text[self.pos:text_end].to_owned()
   let url_start = text_end + 2 // after ](
   // Find closing )
   let mut url_end = url_start
@@ -269,9 +263,8 @@ fn InlineParser::try_link(self : InlineParser) -> Array[@types.Inline]? {
     return None
   }
   url_end = url_end - 1 // before )
-  let url_part = self.text.substring(start=url_start, end=url_end)
+  let url_part = self.text[url_start:url_end].to_owned()
   let mut title : String? = None
-  let mut url_end_pos = url_part.length()
   // Find optional title
   let mut space_pos = 0
   while space_pos < url_part.length() &&
@@ -280,7 +273,7 @@ fn InlineParser::try_link(self : InlineParser) -> Array[@types.Inline]? {
     space_pos = space_pos + 1
   }
   let url = if space_pos < url_part.length() {
-    let real_url = url_part.substring(start=0, end=space_pos)
+    let real_url = url_part[0:space_pos].to_owned()
     let mut ti = space_pos
     while ti < url_part.length() &&
           (url_part[ti] == ' ' || url_part[ti] == '\t') {
@@ -294,21 +287,21 @@ fn InlineParser::try_link(self : InlineParser) -> Array[@types.Inline]? {
         while tend < url_part.length() && url_part[tend] != '"' {
           tend = tend + 1
         }
-        title = Some(url_part.substring(start=tstart, end=tend))
+        title = Some(url_part[tstart:tend].to_owned())
       } else if tc == '\'' {
         let tstart = ti + 1
         let mut tend = ti + 1
         while tend < url_part.length() && url_part[tend] != '\'' {
           tend = tend + 1
         }
-        title = Some(url_part.substring(start=tstart, end=tend))
+        title = Some(url_part[tstart:tend].to_owned())
       } else if tc == '(' {
         let tstart = ti + 1
         let mut tend = ti + 1
         while tend < url_part.length() && url_part[tend] != ')' {
           tend = tend + 1
         }
-        title = Some(url_part.substring(start=tstart, end=tend))
+        title = Some(url_part[tstart:tend].to_owned())
       }
     }
     real_url
@@ -319,7 +312,7 @@ fn InlineParser::try_link(self : InlineParser) -> Array[@types.Inline]? {
   let final_url = if url.length() > 2 &&
     url[0] == '<' &&
     url[url.length() - 1] == '>' {
-    url.substring(start=1, end=url.length() - 1)
+    url[1:url.length() - 1].to_owned()
   } else {
     url
   }
@@ -376,7 +369,7 @@ fn InlineParser::try_autolink(self : InlineParser) -> @types.Inline? {
     self.pos = start
     return None
   }
-  let content = self.text.substring(start=self.pos, end~)
+  let content = self.text[self.pos:end].to_owned()
   if content == "" || content[0] == '>' {
     self.pos = start
     return None
@@ -407,7 +400,7 @@ fn InlineParser::try_code_span(self : InlineParser) -> String? {
         scan = scan + 1
       }
       if close_count == open_count {
-        let content = self.text.substring(start=self.pos, end=search)
+        let content = self.text[self.pos:search].to_owned()
         self.pos = search + open_count
         return Some(normalize_code_content(content))
       }
@@ -436,7 +429,7 @@ fn normalize_code_content(s : String) -> String {
   if s_end > s_start && (s[s_end - 1] == ' ' || s[s_end - 1] == '\t') {
     s_end = s_end - 1
   }
-  s.substring(start=s_start, end=s_end)
+  s[s_start:s_end].to_owned()
 }
 
 // --- Utilities ---

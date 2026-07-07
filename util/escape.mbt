@@ -7,9 +7,9 @@ pub fn decode_entity(name : String) -> String? {
   }
   if name[0] == '#' {
     if name.length() > 1 && (name[1] == 'x' || name[1] == 'X') {
-      decode_hex_entity(name.substring(start=2))
+      decode_hex_entity(name[2:].to_owned())
     } else {
-      decode_dec_entity(name.substring(start=1))
+      decode_dec_entity(name[1:].to_owned())
     }
   } else {
     lookup_named_entity(name)
@@ -39,7 +39,7 @@ fn decode_hex_entity(hex : String) -> String? {
   if val == 0 || (val >= 0xD800 && val <= 0xDFFF) || val > 0x10FFFF {
     Some("\u{FFFD}")
   } else {
-    Some(Char::from_int(val).to_string())
+    Some(Int::unsafe_to_char(val).to_string())
   }
 }
 
@@ -62,7 +62,7 @@ fn decode_dec_entity(dec : String) -> String? {
   if val == 0 || (val >= 0xD800 && val <= 0xDFFF) || val > 0x10FFFF {
     Some("\u{FFFD}")
   } else {
-    Some(Char::from_int(val).to_string())
+    Some(Int::unsafe_to_char(val).to_string())
   }
 }
 
@@ -142,7 +142,7 @@ pub fn escape_html(s : String) -> String {
   let mut result = ""
   let mut i = 0
   while i < s.length() {
-    let c = s.substring(start=i, end=i + 1)
+    let c = s[i:i + 1].to_owned()
     match s[i] {
       '&' => result = result + "&amp;"
       '<' => result = result + "&lt;"

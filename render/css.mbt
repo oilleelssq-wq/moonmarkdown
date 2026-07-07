@@ -6,7 +6,7 @@
 
 ///|
 /// Map of HTML element names to CSS class strings.
-struct CssClasses {
+pub(all) struct CssClasses {
   heading1 : String
   heading2 : String
   heading3 : String

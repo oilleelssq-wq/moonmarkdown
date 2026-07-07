@@ -7,13 +7,13 @@
 /// A line in the source document with position metadata.
 pub(all) struct Line {
   /// Line content with trailing whitespace stripped.
-  pub content : String
+  content : String
   /// Byte offset from start of source text (0-based).
-  pub offset : Int
+  offset : Int
   /// Whether the line is empty or whitespace-only.
-  pub is_blank : Bool
+  is_blank : Bool
   /// Line ending length: 0=EOF, 1=`\n` or `\r`, 2=`\r\n`
-  pub ending : Int
+  ending : Int
 }
 
 ///|
@@ -27,7 +27,7 @@ pub fn scan_lines(src : String) -> Array[Line] {
   while i < len {
     let c = src[i]
     if c == '\n' {
-      let content = src.substring(start=pos, end=i)
+      let content = src[pos:i].to_owned()
       let stripped = strip_trailing_spaces(content)
       lines.push(Line::{
         content: stripped,
@@ -37,7 +37,7 @@ pub fn scan_lines(src : String) -> Array[Line] {
       })
       pos = i + 1
     } else if c == '\r' {
-      let content = src.substring(start=pos, end=i)
+      let content = src[pos:i].to_owned()
       let stripped = strip_trailing_spaces(content)
       if i + 1 < len && src[i + 1] == '\n' {
         lines.push(Line::{
@@ -61,7 +61,7 @@ pub fn scan_lines(src : String) -> Array[Line] {
     i = i + 1
   }
   if pos <= len {
-    let content = src.substring(start=pos, end=len)
+    let content = src[pos:len].to_owned()
     let stripped = strip_trailing_spaces(content)
     lines.push(Line::{
       content: stripped,
@@ -88,7 +88,7 @@ fn strip_trailing_spaces(s : String) -> String {
   if i == end {
     s
   } else {
-    s.substring(start=0, end=i)
+    s[0:i].to_owned()
   }
 }
 
@@ -97,14 +97,14 @@ fn strip_trailing_spaces(s : String) -> String {
 pub fn raw_line_content(src : String, line : Line) -> String {
   let end = line.offset + line.content.length()
   if line.ending == 2 {
-    src.substring(start=line.offset, end~)
+    src[line.offset:end].to_owned()
   } else if line.ending == 1 {
     if line.offset + line.content.length() < src.length() {
-      src.substring(start=line.offset, end=line.offset + line.content.length())
+      src[line.offset:line.offset + line.content.length()].to_owned()
     } else {
       line.content
     }
   } else {
-    src.substring(start=line.offset)
+    src[line.offset:].to_owned()
   }
 }

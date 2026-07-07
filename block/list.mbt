@@ -1,7 +1,7 @@
 // List parsing: unordered (-, *, +) and ordered (1., 2.), single-level.
 
 ///|
-struct ListInfo {
+priv struct ListInfo {
   ordered : Bool
   start : Int
   marker : UInt16
@@ -55,5 +55,5 @@ fn strip_list_marker(line : String, info : ListInfo) -> String {
     i = i + 1
     space_count = space_count + 1
   }
-  line.substring(start=i)
+  line[i:].to_owned()
 }

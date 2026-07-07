@@ -63,11 +63,6 @@ fn try_atx_heading(line : String) -> @types.Block? {
       content_end = content_end - 1
     }
   }
-  let content = if content_start < content_end {
-    line.substring(start=content_start, end=content_end)
-  } else {
-    ""
-  }
   Some(@types.Block::Heading(level, [])) // inlines filled by caller
 }
 

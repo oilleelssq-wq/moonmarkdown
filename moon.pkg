@@ -2,7 +2,5 @@ import {
   "oilleelssq-wq/moonmarkdown/types",
   "oilleelssq-wq/moonmarkdown/util",
   "oilleelssq-wq/moonmarkdown/block",
-  "oilleelssq-wq/moonmarkdown/inline",
   "oilleelssq-wq/moonmarkdown/render",
-  "oilleelssq-wq/moonmarkdown/ext",
 }

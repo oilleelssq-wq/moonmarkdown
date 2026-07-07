@@ -95,7 +95,7 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
         let list_items = list_children.0
         let consumed = list_children.1
         pos = pos + consumed
-        let tight = is_tight_list(list_items)
+        let tight = true
         children.push(
           @types.Block::List(
             if list_info.ordered {
@@ -126,7 +126,7 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
             ) {
         let lc = lines[pos].content
         if lc.length() >= 4 && check_four_spaces(lc) {
-          code_lines.push(lc.substring(start=4))
+          code_lines.push(lc[4:].to_owned())
         } else {
           code_lines.push("")
         }
@@ -207,9 +207,9 @@ fn collect_blockquote_lines(
     let content = lines[i].content
     if content != "" && content[0] == '>' {
       let inner = if content.length() > 1 && content[1] == ' ' {
-        content.substring(start=2)
+        content[2:].to_owned()
       } else if content.length() > 1 {
-        content.substring(start=1)
+        content[1:].to_owned()
       } else {
         ""
       }
@@ -248,7 +248,7 @@ fn try_lrd(line : String) -> (String, String, String?)? {
   if i >= len {
     return None
   }
-  let label = line.substring(start=1, end=i)
+  let label = line[1:i].to_owned()
   i = i + 1
   // Must be followed by :
   if i >= len || line[i] != ':' {
@@ -270,14 +270,14 @@ fn try_lrd(line : String) -> (String, String, String?)? {
     if i >= len {
       return None
     }
-    url = line.substring(start=url_start, end=i)
+    url = line[url_start:i].to_owned()
     i = i + 1
   } else {
     let url_start = i
     while i < len && line[i] != ' ' && line[i] != '\t' {
       i = i + 1
     }
-    url = line.substring(start=url_start, end=i)
+    url = line[url_start:i].to_owned()
   }
   // Optional title
   let mut title : String? = None
@@ -294,7 +294,7 @@ fn try_lrd(line : String) -> (String, String, String?)? {
           i = i + 1
         }
         if i < len {
-          title = Some(line.substring(start=title_start, end=i))
+          title = Some(line[title_start:i].to_owned())
         }
       } else {
         let close = title_char
@@ -304,7 +304,7 @@ fn try_lrd(line : String) -> (String, String, String?)? {
           i = i + 1
         }
         if i < len {
-          title = Some(line.substring(start=title_start, end=i))
+          title = Some(line[title_start:i].to_owned())
         }
       }
     }
@@ -344,7 +344,7 @@ fn extract_heading_text(line : String) -> String {
     }
   }
   if start < end {
-    line.substring(start~, end~)
+    line[start:end].to_owned()
   } else {
     ""
   }
@@ -374,19 +374,19 @@ fn parse_list_items(
       if lc == "" {
         pos = pos + 1
         if pos < len &&
-          detect_list_item(lines[pos].content).is_none() &&
+          detect_list_item(lines[pos].content) is None &&
           !is_block_start(lines[pos].content) {
           item_lines.push("")
         } else {
           break
         }
-      } else if detect_list_item(lc).is_some() {
+      } else if detect_list_item(lc) is Some(_) {
         break
       } else if is_block_start(lc) {
         break
       } else {
         if lc.length() >= 4 && check_four_spaces(lc) {
-          item_lines.push(lc.substring(start=4))
+          item_lines.push(lc[4:].to_owned())
         } else {
           item_lines.push(lc)
         }
@@ -412,7 +412,3 @@ fn parse_list_items(
 }
 
 ///|
-fn is_tight_list(items : Array[@types.Block]) -> Bool {
-  // Default tight for single-level lists
-  true
-}

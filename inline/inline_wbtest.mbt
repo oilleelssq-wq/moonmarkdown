@@ -129,7 +129,9 @@ test "parse_inlines link basic" {
 test "parse_inlines link with title" {
   let result = parse_inlines("[text](url \"title\")")
   match result[0] {
-    @types.Inline::Link(_, _, title) => assert_eq(title, Some("title"))
+    @types.Inline::Link(_, _, Some(title)) => assert_eq(title, "title")
+    @types.Inline::Link(_, _, None) =>
+      assert_eq("expected title", "missing title")
     _ => assert_eq("expected Link", "wrong")
   }
 }

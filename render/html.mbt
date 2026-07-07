@@ -39,8 +39,8 @@ pub fn render_block(block : @types.Block) -> String {
       "<pre><code>" + @util.escape_html(content) + "</code></pre>\n"
     @types.Block::BlockQuote(children) =>
       "<blockquote>\n" + render_blocks(children) + "</blockquote>\n"
-    @types.Block::List(start, tight, _marker, items) => {
-      let tag = if start.is_some() { "ol" } else { "ul" }
+    @types.Block::List(start, _tight, _marker, items) => {
+      let tag = if start is Some(_) { "ol" } else { "ul" }
       let start_attr = match start {
         Some(n) => " start=\"" + n.to_string() + "\""
         _ => ""
@@ -83,7 +83,7 @@ fn render_blocks_inline(blocks : Array[@types.Block]) -> String {
     let block_html = render_block(blocks[i])
     if block_html != "" {
       if block_html[block_html.length() - 1] == '\n' {
-        html = html + block_html.substring(start=0, end=block_html.length() - 1)
+        html = html + block_html[0:block_html.length() - 1].to_owned()
       } else {
         html = html + block_html
       }

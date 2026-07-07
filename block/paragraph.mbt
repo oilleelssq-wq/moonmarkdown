@@ -16,7 +16,7 @@ fn is_blank_line(line : String) -> Bool {
 fn is_block_start(line : String) -> Bool {
   is_atx_heading(line) ||
   is_thematic_break(line) ||
-  try_open_fence(line).is_some() ||
+  try_open_fence(line) is Some(_) ||
   is_blockquote_start(line) ||
   is_list_item_start(line) ||
   is_blank_line(line)
