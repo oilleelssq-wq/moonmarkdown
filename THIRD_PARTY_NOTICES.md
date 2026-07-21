@@ -18,5 +18,6 @@ MoonMarkdown depends on the following third-party packages:
 
 The test suite (`spec/spec.txt`) is derived from the CommonMark specification (v0.31.2):
 
-- License: MIT
+- License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - URL: https://github.com/commonmark/commonmark-spec
+- Copyright: 2014 John MacFarlane and contributors
