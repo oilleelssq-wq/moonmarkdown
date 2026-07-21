@@ -1,7 +1,8 @@
 import {
   "oilleelssq-wq/moonmarkdown",
+  "oilleelssq-wq/moonmarkdown/types",
+  "moonbitlang/x/fs",
+  "moonbitlang/x/sys",
 }
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")

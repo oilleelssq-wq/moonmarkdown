@@ -59,6 +59,34 @@ pub fn CssClasses::default() -> CssClasses {
 }
 
 ///|
+/// Create a CssClasses with semantic MoonMarkdown class names.
+pub fn CssClasses::semantic() -> CssClasses {
+  {
+    heading1: "markdown-h1",
+    heading2: "markdown-h2",
+    heading3: "markdown-h3",
+    heading4: "markdown-h4",
+    heading5: "markdown-h5",
+    heading6: "markdown-h6",
+    paragraph: "markdown-paragraph",
+    code: "markdown-code",
+    pre: "markdown-pre",
+    blockquote: "markdown-blockquote",
+    list_ordered: "markdown-list-ordered",
+    list_unordered: "markdown-list-unordered",
+    list_item: "markdown-list-item",
+    link: "markdown-link",
+    image: "markdown-image",
+    emphasis: "markdown-emphasis",
+    strong: "markdown-strong",
+    table: "markdown-table",
+    table_header: "markdown-table-header",
+    table_cell: "markdown-table-cell",
+    strikethrough: "markdown-strikethrough",
+  }
+}
+
+///|
 /// Create a CssClasses preset for Bootstrap 5 compatibility.
 pub fn CssClasses::bootstrap() -> CssClasses {
   {

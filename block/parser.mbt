@@ -2,6 +2,14 @@
 
 ///|
 pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
+  parse_blocks_with_options(lines, @types.MarkdownOptions::default())
+}
+
+///|
+pub fn parse_blocks_with_options(
+  lines : Array[@util.Line],
+  options : @types.MarkdownOptions,
+) -> @types.Block {
   let children = Array::new(capacity=lines.length() / 2)
   let len = lines.length()
   let mut pos = 0
@@ -14,7 +22,17 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
 
     let content = line.content
 
-    // Fenced code block
+    if options.gfm {
+      match @ext.try_table(lines, pos, len) {
+        Some((table, consumed)) => {
+          children.push(table)
+          pos = pos + consumed
+          continue
+        }
+        _ => ()
+      }
+    }
+
     match try_open_fence(content) {
       Some((fence_char, fence_len, info)) => {
         let code_lines = Array::new(capacity=4)
@@ -35,14 +53,12 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
       _ => ()
     }
 
-    // ATX heading
     match try_atx_heading(content) {
       Some(heading) => {
         match heading {
           @types.Block::Heading(level, _) => {
-            // Extract raw text from the heading and inline-parse it
             let raw = extract_heading_text(content)
-            let inlines = @inline.parse_inlines(raw)
+            let inlines = @inline.parse_inlines_with_options(raw, options)
             children.push(@types.Block::Heading(level, inlines))
           }
           _ => children.push(heading)
@@ -53,17 +69,27 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
       _ => ()
     }
 
-    // Thematic break
     if is_thematic_break(content) {
       children.push(@types.Block::ThematicBreak)
       pos = pos + 1
       continue
     }
 
-    // Blockquote
+    if options.html && is_html_block_start(content) {
+      let html_lines = Array::new(capacity=4)
+      html_lines.push(content)
+      pos = pos + 1
+      while pos < len && !lines[pos].is_blank {
+        html_lines.push(lines[pos].content)
+        pos = pos + 1
+      }
+      children.push(@types.Block::HTMLBlock(join_lines(html_lines)))
+      continue
+    }
+
     if is_blockquote_start(content) {
       let quote_lines = collect_blockquote_lines(lines, pos, len)
-      let inner = parse_blocks(quote_lines)
+      let inner = parse_blocks_with_options(quote_lines, options)
       match inner {
         @types.Block::Document(inner_children) =>
           children.push(@types.Block::BlockQuote(inner_children))
@@ -78,7 +104,6 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
       continue
     }
 
-    // LRD
     match try_lrd(content) {
       Some((label, url, title)) => {
         children.push(@types.Block::LinkReferenceDefinition(label, url, title))
@@ -88,10 +113,11 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
       _ => ()
     }
 
-    // List
     match detect_list_item(content) {
       Some(list_info) => {
-        let list_children = parse_list_items(lines, pos, len, list_info)
+        let list_children = parse_list_items(
+          lines, pos, len, list_info, options,
+        )
         let list_items = list_children.0
         let consumed = list_children.1
         pos = pos + consumed
@@ -113,7 +139,6 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
       _ => ()
     }
 
-    // Indented code block (4+ spaces)
     if content.length() >= 4 && check_four_spaces(content) {
       let code_lines = Array::new(capacity=4)
       while pos < len &&
@@ -136,7 +161,6 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
       continue
     }
 
-    // Paragraph (fallback)
     let para_lines = Array::new(capacity=4)
     while pos < len &&
           !lines[pos].is_blank &&
@@ -146,11 +170,10 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
     }
     if para_lines.length() > 0 {
       let raw_text = join_lines(para_lines)
-      // Check for setext heading
       if pos < len && !lines[pos].is_blank {
         match try_setext_underline(lines[pos].content) {
           Some(level) => {
-            let inlines = @inline.parse_inlines(raw_text)
+            let inlines = @inline.parse_inlines_with_options(raw_text, options)
             children.push(@types.Block::Heading(level, inlines))
             pos = pos + 1
             continue
@@ -158,7 +181,7 @@ pub fn parse_blocks(lines : Array[@util.Line]) -> @types.Block {
           _ => ()
         }
       }
-      let inlines = @inline.parse_inlines(raw_text)
+      let inlines = @inline.parse_inlines_with_options(raw_text, options)
       children.push(@types.Block::Paragraph(inlines))
     }
   }
@@ -358,6 +381,7 @@ fn parse_list_items(
   start : Int,
   len : Int,
   first_info : ListInfo,
+  options : @types.MarkdownOptions,
 ) -> (Array[@types.Block], Int) {
   let items = Array::new(capacity=4)
   let mut pos = start
@@ -395,7 +419,7 @@ fn parse_list_items(
     }
     // Parse item content
     let item_text = join_lines(item_lines)
-    let item_inlines = @inline.parse_inlines(item_text)
+    let item_inlines = @inline.parse_inlines_with_options(item_text, options)
     let item_blocks = Array::new(capacity=1)
     item_blocks.push(@types.Block::Paragraph(item_inlines))
     items.push(@types.Block::ListItem(item_blocks))

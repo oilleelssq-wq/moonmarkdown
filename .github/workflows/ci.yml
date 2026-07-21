@@ -22,5 +22,7 @@ jobs:
         run: moon check
       - name: Moon Format Check
         run: moon fmt --check
+      - name: Moon Build
+        run: moon build
       - name: Moon Test
         run: moon test

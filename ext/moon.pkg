@@ -1,5 +1,4 @@
 import {
   "oilleelssq-wq/moonmarkdown/types",
   "oilleelssq-wq/moonmarkdown/util",
-  "oilleelssq-wq/moonmarkdown/inline",
 }

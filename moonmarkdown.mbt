@@ -27,8 +27,17 @@
 ///
 /// Returns a `Block::Document` containing the top-level block nodes.
 pub fn parse(input : String) -> @types.Block {
+  parse_with_options(input, @types.MarkdownOptions::default())
+}
+
+///|
+/// Parse Markdown source text into an AST with explicit options.
+pub fn parse_with_options(
+  input : String,
+  options : @types.MarkdownOptions,
+) -> @types.Block {
   let lines = @util.scan_lines(input)
-  @block.parse_blocks(lines)
+  @block.parse_blocks_with_options(lines, options)
 }
 
 ///|
@@ -37,7 +46,16 @@ pub fn parse(input : String) -> @types.Block {
 /// Performs depth-first traversal of block and inline nodes
 /// with automatic HTML entity escaping.
 pub fn render(ast : @types.Block) -> String {
-  @render.render_block(ast)
+  render_with_options(ast, @types.MarkdownOptions::default())
+}
+
+///|
+/// Render an AST to HTML string with explicit options.
+pub fn render_with_options(
+  ast : @types.Block,
+  options : @types.MarkdownOptions,
+) -> String {
+  @render.render_block_with_options(ast, options)
 }
 
 ///|
@@ -50,7 +68,15 @@ pub fn render(ast : @types.Block) -> String {
 /// // html == "<p><em>Hello</em> World</p>\n"
 /// ```
 pub fn md_to_html(input : String) -> String {
-  let lines = @util.scan_lines(input)
-  let ast = @block.parse_blocks(lines)
-  @render.render_block(ast)
+  md_to_html_with_options(input, @types.MarkdownOptions::default())
+}
+
+///|
+/// Parse Markdown and render to HTML in one call with explicit options.
+pub fn md_to_html_with_options(
+  input : String,
+  options : @types.MarkdownOptions,
+) -> String {
+  let ast = parse_with_options(input, options)
+  render_with_options(ast, options)
 }

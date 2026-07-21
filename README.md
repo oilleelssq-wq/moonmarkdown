@@ -26,12 +26,22 @@ moon add oilleelssq-wq/moonmarkdown
 ### Library API
 
 ```moonbit
-// One-liner: parse + render
+// One-liner: parse + render (default options)
 let html = @moonmarkdown.md_to_html("# Hello\n\n**bold** text")
 
 // Two-step: parse then render
 let ast = @moonmarkdown.parse(input)
 let html = @moonmarkdown.render(ast)
+
+// With custom options
+let options = @types.MarkdownOptions::gfm()
+  .with_highlight(true)
+  .with_css(@types.CssPreset::Default)
+
+let ast = @moonmarkdown.parse_with_options(input, options)
+let html = @moonmarkdown.render_with_options(ast, options)
+// Or one step:
+let html = @moonmarkdown.md_to_html_with_options(input, options)
 ```
 
 ### CLI
@@ -40,8 +50,20 @@ let html = @moonmarkdown.render(ast)
 # Convert file to stdout
 moon run cmd/main -- input.md
 
-# Pipe from stdin
-echo "# Hello" | moon run cmd/main
+# Convert file and save to output
+moon run cmd/main -- input.md -o output.html
+
+# Enable GFM extensions (tables, strikethrough)
+moon run cmd/main -- input.md --gfm
+
+# Enable syntax highlighting in fenced code blocks
+moon run cmd/main -- input.md --highlight
+
+# Disable raw HTML passthrough
+moon run cmd/main -- input.md --no-html
+
+# Add CSS classes using a preset (none|default|bootstrap)
+moon run cmd/main -- input.md --css default
 ```
 
 ## Examples

@@ -1,101 +1,111 @@
 /// MoonMarkdown CLI — convert Markdown to HTML.
-///
-/// # Usage
-///
-/// ```bash
-/// # Convert a file
-/// moon run cmd/main -- input.md
-///
-/// # Convert with GFM extensions
-/// moon run cmd/main -- --gfm input.md
-///
-/// # Read from stdin
-/// cat input.md | moon run cmd/main
-/// ```
-///
-/// # Options
-///
-/// - `--gfm` — Enable GFM extensions (tables, task lists, strikethrough)
-/// - `--highlight` — Enable syntax highlighting in code blocks
-/// - `-o, --output <file>` — Write output to file instead of stdout
-/// - `-h, --help` — Show help message
 
 ///|
-/// Entry point for the CLI.
-/// Run with `moon run cmd/main` from the project root.
-fn main {
-  println("<html>")
-  println("<head>")
-  println("<meta charset=\"utf-8\">")
-  println("<title>MoonMarkdown</title>")
-  println("<style>")
+struct CliConfig {
+  input : String?
+  output : String?
+  options : @types.MarkdownOptions
+}
+
+///|
+fn main raise {
+  match parse_args(@sys.get_cli_args()) {
+    Some(config) => run(config)
+    _ => ()
+  }
+}
+
+///|
+fn parse_args(args : Array[String]) -> CliConfig? {
+  let mut input : String? = None
+  let mut output : String? = None
+  let mut options = @types.MarkdownOptions::default()
+  let mut i = 1
+  while i < args.length() {
+    let arg = args[i]
+    if arg == "-h" || arg == "--help" {
+      print_usage()
+      return None
+    } else if arg == "--gfm" {
+      options = { ..options, gfm: true }
+      i = i + 1
+      continue
+    } else if arg == "--highlight" {
+      options = options.with_highlight(true)
+      i = i + 1
+      continue
+    } else if arg == "--no-html" {
+      options = options.with_html(false)
+      i = i + 1
+      continue
+    } else if arg == "--css" {
+      if i + 1 >= args.length() {
+        fail_with_usage("missing value for --css")
+      }
+      match args[i + 1] {
+        "none" => options = options.with_css(@types.CssPreset::None)
+        "default" => options = options.with_css(@types.CssPreset::Default)
+        "bootstrap" => options = options.with_css(@types.CssPreset::Bootstrap)
+        other => fail_with_usage("unknown css preset: " + other)
+      }
+      i = i + 2
+      continue
+    } else if arg == "-o" || arg == "--output" {
+      if i + 1 >= args.length() {
+        fail_with_usage("missing output path")
+      }
+      output = Some(args[i + 1])
+      i = i + 2
+      continue
+    } else if arg.has_prefix("-") {
+      fail_with_usage("unknown option: " + arg)
+    } else {
+      if input is Some(_) {
+        fail_with_usage("only one input file is supported")
+      }
+      input = Some(arg)
+      i = i + 1
+      continue
+    }
+  }
+  Some({ input, output, options })
+}
+
+///|
+fn run(config : CliConfig) -> Unit raise {
+  let markdown = match config.input {
+    Some(path) => @fs.read_file_to_string(path)
+    _ =>
+      fail_with_usage(
+        "missing input file; (stdin requires native target, not yet implemented)",
+      )
+  }
+  let html = @moonmarkdown.md_to_html_with_options(markdown, config.options)
+  match config.output {
+    Some(path) => @fs.write_string_to_file(path, html)
+    _ => println(html)
+  }
+}
+
+///|
+fn[T] fail_with_usage(message : String) -> T {
+  println("moonmarkdown: " + message)
+  print_usage()
+  abort(message)
+}
+
+///|
+fn print_usage() -> Unit {
+  println("Usage: moonmarkdown [options] <input.md>")
+  println("")
+  println("Options:")
+  println("  --gfm                  Enable GFM tables and strikethrough")
+  println("  --highlight            Enable syntax highlighting for fenced code")
   println(
-    "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;",
+    "  --no-html              Escape raw HTML instead of passing it through",
   )
-  println(
-    "       max-width: 800px; margin: 0 auto; padding: 2em; line-height: 1.6; }",
-  )
-  println(
-    "code { background: #f4f4f4; padding: 0.2em 0.4em; border-radius: 3px; }",
-  )
-  println(
-    "pre { background: #f4f4f4; padding: 1em; border-radius: 5px; overflow-x: auto; }",
-  )
-  println("pre code { background: none; padding: 0; }")
-  println("table { border-collapse: collapse; width: 100%; }")
-  println("th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }")
-  println("th { background: #f0f0f0; }")
-  println(
-    "blockquote { border-left: 4px solid #ddd; margin: 0; padding-left: 1em; color: #666; }",
-  )
-  println("a { color: #0366d6; text-decoration: none; }")
-  println("a:hover { text-decoration: underline; }")
-  println("hr { border: none; border-top: 2px solid #eee; }")
-  println(".k { color: #d73a49; font-weight: bold; } /* keyword */")
-  println(".t { color: #6f42c1; } /* type */")
-  println(".s { color: #032f62; } /* string */")
-  println(".c { color: #6a737d; font-style: italic; } /* comment */")
-  println(".m { color: #005cc5; } /* number */")
-  println("</style>")
-  println("</head>")
-  println("<body>")
-  println("<h1>MoonMarkdown</h1>")
-  println(
-    "<p>A CommonMark spec-compliant Markdown to HTML parser in pure MoonBit.</p>",
-  )
-  println(
-    "<p>Try piping Markdown content via stdin or providing a file path.</p>",
-  )
-  println("<hr />")
-  println("<h2>Quick Examples</h2>")
-  println("<h3>Emphasis</h3>")
-  println(
-    @moonmarkdown.md_to_html("This is *italic* and **bold** and ***both***"),
-  )
-  println("<h3>Code</h3>")
-  println(@moonmarkdown.md_to_html("Run `moon test` to execute tests"))
-  println("<h3>Links</h3>")
-  println(@moonmarkdown.md_to_html("[MoonBit](https://moonbitlang.com)"))
-  println("<h3>List</h3>")
-  println(@moonmarkdown.md_to_html("- item 1\n- item 2\n- item 3"))
-  println("<h3>Code Block</h3>")
-  println(
-    @moonmarkdown.md_to_html(
-      "```moonbit\nfn main {\n  println(\"Hello\")\n}\n```",
-    ),
-  )
-  println("<h3>Blockquote</h3>")
-  println(
-    @moonmarkdown.md_to_html(
-      "> MoonBit is the next-generation\n> programming language",
-    ),
-  )
-  println("<h3>Table (GFM)</h3>")
-  println(
-    @moonmarkdown.md_to_html(
-      "| Feature | Status |\n|---------|--------|\n| Parse   | Done   |\n| Render  | Done   |",
-    ),
-  )
-  println("</body>")
-  println("</html>")
+  println("  --css none|default|bootstrap")
+  println("                         Add CSS class attributes using a preset")
+  println("  -o, --output <file>    Write HTML to a file")
+  println("  -h, --help             Show this help")
 }

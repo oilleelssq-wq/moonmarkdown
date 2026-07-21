@@ -235,7 +235,7 @@ pub fn try_strikethrough(
   while i + 1 < len {
     if text[i] == '~' && text[i + 1] == '~' {
       let inner = text[pos + 2:i].to_owned()
-      let inlines = @inline.parse_inlines(inner)
+      let inlines = [@types.Inline::Text(inner)]
       let result = Array::new(capacity=1)
       result.push(@types.Inline::Strikethrough(inlines))
       return Some((result, i + 2))

@@ -22,3 +22,7 @@ license = "MIT"
 keywords = [ "markdown", "commonmark", "html", "parser", "gfm" ]
 
 description = "A CommonMark spec-compliant Markdown to HTML parser written in pure MoonBit"
+
+import {
+  "moonbitlang/x@0.4.46",
+}
