@@ -16,7 +16,7 @@ fn normalize_rec(
   if i >= html.length() {
     result
   } else {
-    let ch = html.substring(start=i, end=i + 1)
+    let ch = html[i:i + 1].to_owned()
     if ch == " " || ch == "\t" || ch == "\n" || ch == "\r" {
       if last_was_space || result == "" {
         normalize_rec(html, i + 1, true, result)
@@ -33,8 +33,8 @@ fn normalize_rec(
 fn strip_trailing_space(s : String, pos : Int) -> String {
   if pos < 0 {
     s
-  } else if s.substring(start=pos, end=pos + 1) == " " {
-    s.substring(start=0, end=pos)
+  } else if s[pos] == ' ' {
+    s[0:pos].to_owned()
   } else {
     s
   }
@@ -46,7 +46,7 @@ fn safe_prefix(s : String, max_len : Int) -> String {
   if len <= max_len {
     s
   } else {
-    s.substring(start=0, end=max_len)
+    s[0:max_len].to_owned()
   }
 }
 
@@ -54,7 +54,7 @@ fn safe_prefix(s : String, max_len : Int) -> String {
 // Update this when you fix bugs and the pass count increases.
 
 ///|
-let baseline_passed : Int = 238
+let baseline_passed : Int = 241
 
 ///|
 test "spec compliance summary" {

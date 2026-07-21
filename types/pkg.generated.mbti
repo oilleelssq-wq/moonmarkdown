@@ -1,0 +1,64 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "oilleelssq-wq/moonmarkdown/types"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) enum Block {
+  Document(Array[Block])
+  BlockQuote(Array[Block])
+  ListItem(Array[Block])
+  List(Int?, Bool, UInt16, Array[Block])
+  Paragraph(Array[Inline])
+  Heading(Int, Array[Inline])
+  FencedCodeBlock(String, String)
+  IndentedCodeBlock(String)
+  ThematicBreak
+  HTMLBlock(String)
+  LinkReferenceDefinition(String, String, String?)
+}
+
+pub(all) enum CssPreset {
+  None
+  Default
+  Bootstrap
+}
+
+pub(all) enum Inline {
+  Text(String)
+  CodeSpan(String)
+  Emphasis(Array[Inline])
+  Strong(Array[Inline])
+  Link(Array[Inline], String, String?)
+  Image(Array[Inline], String, String?)
+  HardBreak
+  SoftBreak
+  RawHTML(String)
+  HtmlEntity(String)
+  Autolink(String)
+  Strikethrough(Array[Inline])
+}
+
+pub(all) struct MarkdownOptions {
+  gfm : Bool
+  smart : Bool
+  html : Bool
+  entities : Bool
+  reference_links : Bool
+  highlight : Bool
+  css : CssPreset
+}
+pub fn MarkdownOptions::default() -> Self
+pub fn MarkdownOptions::gfm() -> Self
+pub fn MarkdownOptions::with_bootstrap_css(Self) -> Self
+pub fn MarkdownOptions::with_css(Self, CssPreset) -> Self
+pub fn MarkdownOptions::with_default_css(Self) -> Self
+pub fn MarkdownOptions::with_highlight(Self, Bool) -> Self
+pub fn MarkdownOptions::with_html(Self, Bool) -> Self
+
+// Type aliases
+
+// Traits
+

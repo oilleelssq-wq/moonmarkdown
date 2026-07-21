@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "oilleelssq-wq/moonmarkdown/inline"
+
+import {
+  "oilleelssq-wq/moonmarkdown/types",
+}
+
+// Values
+pub fn normalize_label(String) -> String
+
+pub fn parse_inlines(String) -> Array[@types.Inline]
+
+pub fn parse_inlines_with_options(String, @types.MarkdownOptions) -> Array[@types.Inline]
+
+pub fn parse_inlines_with_refs(String, @types.MarkdownOptions, Array[(String, String, String?)]) -> Array[@types.Inline]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

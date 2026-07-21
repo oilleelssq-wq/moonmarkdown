@@ -1,0 +1,28 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "oilleelssq-wq/moonmarkdown"
+
+import {
+  "oilleelssq-wq/moonmarkdown/types",
+}
+
+// Values
+pub fn md_to_html(String) -> String
+
+pub fn md_to_html_with_options(String, @types.MarkdownOptions) -> String
+
+pub fn parse(String) -> @types.Block
+
+pub fn parse_with_options(String, @types.MarkdownOptions) -> @types.Block
+
+pub fn render(@types.Block) -> String
+
+pub fn render_with_options(@types.Block, @types.MarkdownOptions) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

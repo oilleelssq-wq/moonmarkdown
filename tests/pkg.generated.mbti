@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "oilleelssq-wq/moonmarkdown/tests"
+
+// Values
+pub let spec_cases : Array[SpecCase]
+
+// Errors
+
+// Types and methods
+pub struct SpecCase {
+  section : String
+  number : Int
+  markdown : String
+  html : String
+}
+
+// Type aliases
+
+// Traits
+

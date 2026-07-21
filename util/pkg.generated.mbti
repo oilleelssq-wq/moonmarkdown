@@ -1,0 +1,50 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "oilleelssq-wq/moonmarkdown/util"
+
+// Values
+pub fn decode_entity(String) -> String?
+
+pub fn escape_html(String) -> String
+
+pub fn is_alpha(UInt16) -> Bool
+
+pub fn is_alphanumeric(UInt16) -> Bool
+
+pub fn is_ascii_punctuation(UInt16) -> Bool
+
+pub fn is_digit(UInt16) -> Bool
+
+pub fn is_escapable(UInt16) -> Bool
+
+pub fn is_hexdig(UInt16) -> Bool
+
+pub fn is_line_ending(UInt16) -> Bool
+
+pub fn is_lower_alpha(UInt16) -> Bool
+
+pub fn is_space_or_tab(UInt16) -> Bool
+
+pub fn is_unicode_punctuation(UInt16) -> Bool
+
+pub fn is_upper_alpha(UInt16) -> Bool
+
+pub fn is_whitespace(UInt16) -> Bool
+
+pub fn raw_line_content(String, Line) -> String
+
+pub fn scan_lines(String) -> Array[Line]
+
+// Errors
+
+// Types and methods
+pub(all) struct Line {
+  content : String
+  offset : Int
+  is_blank : Bool
+  ending : Int
+}
+
+// Type aliases
+
+// Traits
+

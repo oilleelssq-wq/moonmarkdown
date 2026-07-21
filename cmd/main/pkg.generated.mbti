@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "oilleelssq-wq/moonmarkdown/cmd/main"
+
+// Values
+
+// Errors
+
+// Types and methods
+type CliConfig
+
+// Type aliases
+
+// Traits
+

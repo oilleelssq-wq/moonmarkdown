@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "oilleelssq-wq/moonmarkdown/block"
+
+import {
+  "oilleelssq-wq/moonmarkdown/types",
+  "oilleelssq-wq/moonmarkdown/util",
+}
+
+// Values
+pub fn is_html_block_start(String) -> Bool
+
+pub fn parse_blocks(Array[@util.Line]) -> @types.Block
+
+pub fn parse_blocks_with_options(Array[@util.Line], @types.MarkdownOptions) -> @types.Block
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

@@ -16,8 +16,8 @@ def extract_tests(spec_path):
 
     tests = []
     for i, m in enumerate(matches):
-        markdown = m.group(1)
-        html = m.group(2)
+        markdown = m.group(1).replace("→", "\t")
+        html = m.group(2).replace("→", "\t")
         # Find the section name from context (lines starting with ##)
         section = "Unknown"
         pos = m.start()

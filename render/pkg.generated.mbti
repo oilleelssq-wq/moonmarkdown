@@ -1,0 +1,56 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "oilleelssq-wq/moonmarkdown/render"
+
+import {
+  "oilleelssq-wq/moonmarkdown/types",
+}
+
+// Values
+pub fn class_attr(String) -> String
+
+pub fn highlight(String, String) -> String
+
+pub fn md_to_html(String) -> String
+
+pub fn render_block(@types.Block) -> String
+
+pub fn render_block_with_options(@types.Block, @types.MarkdownOptions) -> String
+
+pub fn render_inlines(Array[@types.Inline]) -> String
+
+pub fn render_inlines_with_options(Array[@types.Inline], @types.MarkdownOptions) -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct CssClasses {
+  heading1 : String
+  heading2 : String
+  heading3 : String
+  heading4 : String
+  heading5 : String
+  heading6 : String
+  paragraph : String
+  code : String
+  pre : String
+  blockquote : String
+  list_ordered : String
+  list_unordered : String
+  list_item : String
+  link : String
+  image : String
+  emphasis : String
+  strong : String
+  table : String
+  table_header : String
+  table_cell : String
+  strikethrough : String
+}
+pub fn CssClasses::bootstrap() -> Self
+pub fn CssClasses::default() -> Self
+pub fn CssClasses::semantic() -> Self
+
+// Type aliases
+
+// Traits
+
